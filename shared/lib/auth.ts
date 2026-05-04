@@ -5,9 +5,10 @@ import {
   createUserSelect,
   userRepository,
 } from "@/features/users/user.repository";
-import { signInSchema } from "./zods/auth";
+import { signInSchema } from "./zods/auth.zod";
 import bcrypt from "bcryptjs";
 import prisma from "../db/prisma";
+import { Roles } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -20,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       credentials: {
         email: { type: "email", label: "Email" },
-        password: { ype: "password", label: "Password" },
+        password: { type: "password", label: "Password" },
       },
       authorize: async (credentials) => {
         if (!credentials.email || !credentials.password) {
@@ -34,11 +35,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           name: true,
           email: true,
           password: true,
+          image: true,
+          role: true,
         });
 
-        const userRepo = userRepository();
-
-        const userDb = await userRepo.findUserByEmail(email, selectData);
+        const userDb = await userRepository.findUserByEmail(email, selectData);
 
         if (!userDb) {
           return null;
@@ -58,6 +59,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
+        token.image = user.image;
+        token.role = user.role;
       }
 
       return token;
@@ -66,6 +69,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id as string;
       session.user.name = token.name as string;
       session.user.email = token.email as string;
+      session.user.image = token.image as string;
+      session.user.role = token.role as Roles;
 
       return session;
     },
@@ -73,11 +78,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 });
 
 declare module "next-auth" {
+  interface User {
+    role: Roles;
+  }
+
   interface Session {
     user: {
       id: string;
       name: string;
       email: string;
+      image: string;
+      role: Roles;
     } & DefaultSession["user"];
   }
 }

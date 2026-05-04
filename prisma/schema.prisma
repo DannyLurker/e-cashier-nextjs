@@ -59,7 +59,7 @@ enum Entity {
 // Acount creation
 model User {
   id            String          @id @default(cuid())
-  name          String?
+  name          String
   email         String          @unique
   password      String
   emailVerified DateTime?
@@ -138,7 +138,7 @@ model Authenticator {
 // Product - Stock - Order
 model Product {
   id          String  @id @default(cuid())
-  name        String
+  name        String  @unique
   image       String?
   description String
   price       Int

@@ -11,18 +11,27 @@ export const createUserWhereUnique = <T extends Prisma.UserWhereUniqueInput>(
 export const createUserSelect = <T extends Prisma.UserSelect>(select: T): T =>
   select;
 
-export const userRepository = () => {
-  return {
-    findUserByEmail: <T extends Prisma.UserSelect>(
-      email: string,
-      select: Prisma.Subset<T, Prisma.UserSelect>,
-    ) => {
-      return prisma.user.findUnique({
-        where: {
-          email,
-        },
-        select: select,
-      });
-    },
-  };
+export const userRepository = {
+  findUserByEmail: <T extends Prisma.UserSelect>(
+    email: string,
+    select: Prisma.Subset<T, Prisma.UserSelect>,
+  ) => {
+    return prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: select,
+    });
+  },
+  findUserById: <T extends Prisma.UserSelect>(
+    id: string,
+    select: Prisma.Subset<T, Prisma.UserSelect>,
+  ) => {
+    return prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: select,
+    });
+  },
 };

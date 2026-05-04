@@ -3,13 +3,13 @@ import {
   userRepository,
 } from "@/features/users/user.repository";
 import { auth } from "./auth";
-import { unauthorized } from "./error-handlers";
+import { notFound, unauthorized } from "./error-handlers";
 
 const sessionValidation = {
   inventory: async () => {
     const currentSession = await auth();
 
-    if (currentSession?.user) return unauthorized("You're not authorized");
+    if (currentSession?.user) throw unauthorized("You're not authorized");
 
     const selectData = createUserSelect({
       id: true,
@@ -23,6 +23,8 @@ const sessionValidation = {
       currentSession?.user.id!,
       selectData,
     );
+
+    if (!user) throw notFound("User with this session not found");
 
     return user;
   },

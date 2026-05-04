@@ -1,9 +1,10 @@
-import { ProductStoreSchema } from "@/shared/lib/zods/product.zod";
+import sessionValidation from "@/shared/lib/session-validations";
+import { ProductCreateSchema } from "@/shared/lib/zods/product.zod";
 
 const productService = () => {
   return {
-    store: async (data: ProductStoreSchema) => {
-      
+    store: async (data: ProductCreateSchema) => {
+      const inventorySession = await sessionValidation.inventory();
     },
   };
 };

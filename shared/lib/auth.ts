@@ -4,8 +4,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import {
   createUserSelect,
   userRepository,
-} from "@/features/user/user.repository";
-import { signInSchema } from "./zod/auth";
+} from "@/features/users/user.repository";
+import { signInSchema } from "./zods/auth";
 import bcrypt from "bcryptjs";
 import prisma from "../db/prisma";
 

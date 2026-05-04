@@ -159,6 +159,7 @@ model Stock {
   product   Product   @relation(fields: [productId], references: [id])
   quantity  Int
   type      StockType
+  expiredAt DateTime?
 
   // Optional: Link to order if type is SALE
   orderId String?

@@ -70,10 +70,11 @@ model User {
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
-  products Product[]
-  stocks   Stock[]
-  orders   Order[]
-  logs     LogAudit[]
+  createdProducts Product[]  @relation("ProductCreator")
+  updatedProducts Product[]  @relation("ProductUpdater")
+  stocks          Stock[]
+  orders          Order[]
+  logs            LogAudit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -142,9 +143,12 @@ model Product {
   image       String?
   description String
   price       Int
+  attributes  Json?
 
-  createdBy String
-  user      User   @relation(fields: [createdBy], references: [id])
+  createdBy     String
+  updatedBy     String?
+  userCreatedBy User    @relation("ProductCreator", fields: [createdBy], references: [id])
+  userUpdatedBy User?   @relation("ProductUpdater", fields: [updatedBy], references: [id])
 
   stocks     Stock[]
   orderItems OrderItem[]

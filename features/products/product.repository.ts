@@ -1,4 +1,7 @@
-import { ProductCreateSchema } from "@/shared/lib/zods/product.zod";
+import {
+  ProductCreateSchema,
+  ProductUpdateSchema,
+} from "@/shared/lib/zods/product.zod";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 const productRepository = {
@@ -11,8 +14,10 @@ const productRepository = {
       data: {
         createdBy: userId,
         name: data.name,
-        price: data.price,
         description: data.description,
+        image: data.image,
+        price: data.price,
+        attributes: data.attributes ? data.attributes : undefined,
         stocks: data.initialStock
           ? {
               create: {
@@ -23,6 +28,25 @@ const productRepository = {
               },
             }
           : undefined,
+      },
+    });
+  },
+  update: async (
+    userId: string,
+    data: ProductUpdateSchema,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    await tx.product.update({
+      where: {
+        id: data.productId,
+      },
+      data: {
+        updatedBy: userId,
+        name: data.name,
+        description: data.description,
+        image: data.image,
+        price: data.price,
+        attributes: data.attributes ? data.attributes : undefined,
       },
     });
   },

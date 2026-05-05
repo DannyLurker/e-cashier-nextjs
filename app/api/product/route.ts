@@ -21,3 +21,21 @@ export async function POST(req: Request) {
     return handleError(error);
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const data = await req.json();
+
+    const result = await productService.update(data);
+
+    return Response.json(
+      {
+        message: result.message,
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    printConsoleError(error, "PATCH", req.url);
+    return handleError(error);
+  }
+}

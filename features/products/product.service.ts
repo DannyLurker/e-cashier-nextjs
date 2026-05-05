@@ -2,6 +2,8 @@ import sessionValidation from "@/shared/lib/validations/user-session-validation"
 import {
   productCreateSchema,
   ProductCreateSchema,
+  productUpdateSchema,
+  ProductUpdateSchema,
 } from "@/shared/lib/zods/product.zod";
 import productRepository from "./product.repository";
 import prisma from "@/shared/db/prisma";
@@ -21,6 +23,21 @@ const productService = {
 
     return {
       message: `${validatedData.name} was successfully created`,
+    };
+  },
+
+  update: async (rawData: ProductUpdateSchema) => {
+    const session = await sessionValidation();
+    const validatedData = productUpdateSchema.parse(rawData);
+
+    if (!canManageInventory(session.role)) {
+      throw forbidden("You're not allowed to access this feature");
+    }
+
+    await productRepository.update(session.id, validatedData, prisma);
+
+    return {
+      message: `${validatedData.name} was successfully updated`,
     };
   },
 };

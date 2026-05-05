@@ -1,25 +1,28 @@
-import prisma from "@/shared/db/prisma";
 import { ProductCreateSchema } from "@/shared/lib/zods/product.zod";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const productRepository = {
-  store: async (userId: string, data: ProductCreateSchema) => {
-    await prisma.product.create({
+  create: async (
+    userId: string,
+    data: ProductCreateSchema,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    await tx.product.create({
       data: {
         createdBy: userId,
         name: data.name,
         price: data.price,
         description: data.description,
-        stocks:
-          data.initialStock && data.expiredAt
-            ? {
-                create: {
-                  createdBy: userId,
-                  quantity: data.initialStock,
-                  type: "RESTOCK",
-                  expiredAt: data.expiredAt,
-                },
-              }
-            : undefined,
+        stocks: data.initialStock
+          ? {
+              create: {
+                createdBy: userId,
+                quantity: data.initialStock,
+                type: "RESTOCK",
+                expiredAt: data.expiredAt ? data.expiredAt : undefined,
+              },
+            }
+          : undefined,
       },
     });
   },

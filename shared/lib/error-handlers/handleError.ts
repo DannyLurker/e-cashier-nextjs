@@ -1,7 +1,7 @@
-// import { primsaNotFoundCode } from "../constants/prismaErrorCode";
-// import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { ZodError } from "zod/v3";
 import AppError from "./AppError";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import prismaErrorCode from "./prisma-error-code";
 
 export function handleError(error: unknown) {
   console.error("[API_ERROR]", {
@@ -9,12 +9,16 @@ export function handleError(error: unknown) {
     message: error,
   });
 
-  // if (error instanceof PrismaClientKnownRequestError) {
-  //   const prismaError = error as { code: string };
-  //   if (prismaError.code === primsaNotFoundCode) {
-  //     return Response.json({ message: "Record not found" }, { status: 404 });
-  //   }
-  // }
+  if (error instanceof PrismaClientKnownRequestError) {
+    const prismaError = error as { code: string };
+    if (prismaError.code === prismaErrorCode.notFound) {
+      return Response.json({ message: "Data not found" }, { status: 404 });
+    }
+
+    if (prismaError.code === prismaErrorCode.uniqueConstraintFailed) {
+      return Response.json({ message: "Data is duplicate" }, { status: 404 });
+    }
+  }
 
   if (error instanceof ZodError) {
     return Response.json(
@@ -45,4 +49,17 @@ export function handleError(error: unknown) {
     },
     { status: 500 },
   );
+}
+
+type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
+
+export function printConsoleError(
+  error: unknown,
+  httpMethod: HttpMethod,
+  apiUrl: string,
+) {
+  console.error("API_ERROR", {
+    route: `(${httpMethod}) ${apiUrl}`,
+    message: error instanceof Error ? error.message : String(error),
+  });
 }

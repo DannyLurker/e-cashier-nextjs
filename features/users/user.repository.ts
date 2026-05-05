@@ -29,7 +29,7 @@ export const userRepository = {
   ) => {
     return prisma.user.findUnique({
       where: {
-        id,
+        id: id,
       },
       select: select,
     });

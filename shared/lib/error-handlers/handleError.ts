@@ -1,7 +1,8 @@
-import { ZodError } from "zod/v3";
 import AppError from "./AppError";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import prismaErrorCode from "./prisma-error-code";
+import { generateReadableError } from "../zods/general.zod";
+import { ZodError } from "zod";
 
 export function handleError(error: unknown) {
   console.error("[API_ERROR]", {
@@ -16,24 +17,24 @@ export function handleError(error: unknown) {
     }
 
     if (prismaError.code === prismaErrorCode.uniqueConstraintFailed) {
-      return Response.json({ message: "Data is duplicate" }, { status: 404 });
+      return Response.json({ message: "Data is duplicate" }, { status: 409 });
     }
   }
 
   if (error instanceof ZodError) {
     return Response.json(
       {
+        success: false,
         message: "Validation failed",
-        errors: error.errors.map((e) => ({
-          field: e.path.join(", "),
-          message: e.message,
+        errors: error.issues.map((e) => ({
+          field: e.path.join("."),
+          message: generateReadableError(e),
         })),
       },
       { status: 400 },
     );
   }
 
-  // 2. Custom AppError
   if (error instanceof AppError) {
     return Response.json(
       { message: error.message },
@@ -41,7 +42,6 @@ export function handleError(error: unknown) {
     );
   }
 
-  // 3. Unknown error
   return Response.json(
     {
       code: "INTERNAL_SERVER_ERROR",

@@ -160,10 +160,10 @@ model Product {
 model Stock {
   id        String    @id @default(cuid())
   productId String
-  product   Product   @relation(fields: [productId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int
   type      StockType
-  expiredAt DateTime?
+  expiredAt String?
 
   // Optional: Link to order if type is SALE
   orderId String?

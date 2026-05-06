@@ -24,7 +24,7 @@ const productRepository = {
                 createdBy: userId,
                 quantity: data.initialStock,
                 type: "RESTOCK",
-                expiredAt: data.expiredAt ? data.expiredAt : undefined,
+                expiredAt: data.expiredAt,
               },
             }
           : undefined,

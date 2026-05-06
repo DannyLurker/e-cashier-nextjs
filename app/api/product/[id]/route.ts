@@ -6,12 +6,12 @@ import {
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ productId: string }> },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { productId } = await params;
+    const { id } = await params;
 
-    const result = await productService.delete(productId);
+    const result = await productService.delete(id);
 
     return Response.json(
       {

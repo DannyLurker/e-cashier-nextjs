@@ -7,7 +7,7 @@ import {
   productUpdateSchema,
   ProductUpdateSchema,
 } from "@/shared/lib/zods/product.zod";
-import productRepository from "./product.repository";
+import productRepository, { createProductInclude } from "./product.repository";
 import prisma from "@/shared/db/prisma";
 import { canManageInventory } from "@/shared/lib/validations/user-access-validation";
 import { badRequest, forbidden } from "@/shared/lib/error-handlers";
@@ -25,6 +25,25 @@ const productService = {
 
     return {
       message: `${validatedData.name} was successfully created`,
+    };
+  },
+
+  get: async (productId: string) => {
+    await sessionValidation();
+
+    if (!productId) throw badRequest("Product ID is missing");
+
+    const productWithStock = createProductInclude({ stocks: true });
+
+    const product = await productRepository.get(
+      productId,
+      productWithStock,
+      prisma,
+    );
+
+    return {
+      message: `${product?.name} was successfully retrieved`,
+      product,
     };
   },
 

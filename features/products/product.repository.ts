@@ -10,6 +10,19 @@ export const createProductInclude = <T extends Prisma.ProductInclude>(
 ) => include;
 
 const productRepository = {
+  get: async <T extends Prisma.ProductInclude>(
+    productId: string,
+    include: Prisma.Subset<Prisma.ProductInclude, T> | undefined,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    return await tx.product.findUnique({
+      where: {
+        id: productId,
+      },
+      include,
+    });
+  },
+
   getMany: async <T extends Prisma.ProductInclude>(
     params: ProductGetSchema,
     include: Prisma.Subset<Prisma.ProductInclude, T> | undefined,

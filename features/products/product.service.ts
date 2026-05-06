@@ -8,7 +8,7 @@ import {
 import productRepository from "./product.repository";
 import prisma from "@/shared/db/prisma";
 import { canManageInventory } from "@/shared/lib/validations/user-access-validation";
-import { forbidden } from "@/shared/lib/error-handlers";
+import { badRequest, forbidden } from "@/shared/lib/error-handlers";
 
 const productService = {
   create: async (rawData: ProductCreateSchema) => {
@@ -38,6 +38,22 @@ const productService = {
 
     return {
       message: `${validatedData.name} was successfully updated`,
+    };
+  },
+
+  delete: async (productId: string) => {
+    const session = await sessionValidation();
+
+    if (!productId) throw badRequest("Product id is missing");
+
+    if (!canManageInventory(session.role)) {
+      throw forbidden("You're not allowed to access this feature");
+    }
+
+    const result = await productRepository.delete(productId, prisma);
+
+    return {
+      message: `${result.name} was successfully deleted`,
     };
   },
 };

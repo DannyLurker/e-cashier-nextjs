@@ -22,6 +22,17 @@ export async function POST(req: Request) {
   }
 }
 
+export async function GET(req: Request) {
+  try {
+
+    
+
+  } catch (error) {
+    printConsoleError(error, "GET", req.url);
+    return handleError(error);
+  }
+}
+
 export async function PATCH(req: Request) {
   try {
     const data = await req.json();

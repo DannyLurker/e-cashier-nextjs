@@ -50,6 +50,20 @@ const productRepository = {
       },
     });
   },
+
+  delete: async (
+    productId: string,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    return await tx.product.delete({
+      where: {
+        id: productId,
+      },
+      select: {
+        name: true,
+      },
+    });
+  },
 };
 
 export default productRepository;

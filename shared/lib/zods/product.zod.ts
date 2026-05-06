@@ -7,7 +7,11 @@ export const productCreateSchema = z.object({
   price: z.number().min(1),
   attributes: z.json().optional(),
   initialStock: z.number().optional(),
-  expiredAt: z.date().optional(),
+  // expiredAt: z
+  //   .string()
+  //   .transform((val) => new Date(val))
+  //   .optional(),
+  expiredAt: z.coerce.date().optional(),
 });
 
 export type ProductCreateSchema = z.infer<typeof productCreateSchema>;

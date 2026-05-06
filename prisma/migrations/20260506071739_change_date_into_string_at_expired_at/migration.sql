@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Stock" ALTER COLUMN "expiredAt" SET DATA TYPE TEXT;

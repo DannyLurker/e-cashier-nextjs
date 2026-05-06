@@ -8,37 +8,67 @@ import {
 import productRepository from "./product.repository";
 import prisma from "@/shared/db/prisma";
 import { canManageInventory } from "@/shared/lib/validations/user-access-validation";
-import { forbidden } from "@/shared/lib/error-handlers";
+import { badRequest, forbidden } from "@/shared/lib/error-handlers";
 
 const productService = {
   create: async (rawData: ProductCreateSchema) => {
-    const session = await sessionValidation();
-    const validatedData = productCreateSchema.parse(rawData);
+    try {
+      const session = await sessionValidation();
+      const validatedData = productCreateSchema.parse(rawData);
 
-    if (!canManageInventory(session.role)) {
-      throw forbidden("You're not allowed to access this feature");
+      console.log(validatedData);
+
+      if (!canManageInventory(session.role)) {
+        throw forbidden("You're not allowed to access this feature");
+      }
+
+      await productRepository.create(session.id, validatedData, prisma);
+
+      return {
+        message: `${validatedData.name} was successfully created`,
+      };
+    } catch (error) {
+      throw error;
     }
-
-    await productRepository.create(session.id, validatedData, prisma);
-
-    return {
-      message: `${validatedData.name} was successfully created`,
-    };
   },
 
   update: async (rawData: ProductUpdateSchema) => {
-    const session = await sessionValidation();
-    const validatedData = productUpdateSchema.parse(rawData);
+    try {
+      const session = await sessionValidation();
+      const validatedData = productUpdateSchema.parse(rawData);
 
-    if (!canManageInventory(session.role)) {
-      throw forbidden("You're not allowed to access this feature");
+      if (!canManageInventory(session.role)) {
+        throw forbidden("You're not allowed to access this feature");
+      }
+
+      await productRepository.update(session.id, validatedData, prisma);
+
+      return {
+        message: `${validatedData.name} was successfully updated`,
+      };
+    } catch (error) {
+      throw error;
     }
+  },
 
-    await productRepository.update(session.id, validatedData, prisma);
+  delete: async (productId: string) => {
+    try {
+      const session = await sessionValidation();
 
-    return {
-      message: `${validatedData.name} was successfully updated`,
-    };
+      if (!productId) throw badRequest("Product id is missing");
+
+      if (!canManageInventory(session.role)) {
+        throw forbidden("You're not allowed to access this feature");
+      }
+
+      const result = await productRepository.delete(productId, prisma);
+
+      return {
+        message: `${result.name} was successfully deleted`,
+      };
+    } catch (error) {
+      throw error;
+    }
   },
 };
 

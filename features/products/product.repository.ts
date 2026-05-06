@@ -24,7 +24,7 @@ const productRepository = {
                 createdBy: userId,
                 quantity: data.initialStock,
                 type: "RESTOCK",
-                expiredAt: data.expiredAt ? data.expiredAt : undefined,
+                expiredAt: data.expiredAt,
               },
             }
           : undefined,
@@ -47,6 +47,20 @@ const productRepository = {
         image: data.image,
         price: data.price,
         attributes: data.attributes ? data.attributes : undefined,
+      },
+    });
+  },
+
+  delete: async (
+    productId: string,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    return await tx.product.delete({
+      where: {
+        id: productId,
+      },
+      select: {
+        name: true,
       },
     });
   },

@@ -1,34 +1,28 @@
-import { Issue } from "../types/zod.type";
+import z from "zod";
+
+export const page = z
+  .string()
+  .default("0")
+  .transform((val) => Number(val))
+  .refine((val) => Number.isInteger(val) && val >= 0, {
+    message: "page must be a non-negative integer",
+  });
 
 export const isRequiredMessage = (field: string) => {
   return `${field} is required`;
 };
 
-export const formatZodErrors = (issues: Issue[]) => {
-  return issues.map((issue) => {
-    const field = issue.path.join(".") || "root";
+export const generateReadableError = (issue: z.core.$ZodIssue): string => {
+  const fieldName = issue.path.join(".");
 
-    switch (issue.code) {
-      case "invalid_type":
-        return `${field} must be a ${issue.expected}`;
-
-      case "unrecognized_keys":
-        return `Unknown field(s): ${issue.keys?.join(", ")}`;
-
-      case "invalid_string":
-        return `${field} is invalid`;
-
-      case "too_small":
-        return `${field} is too short`;
-
-      case "too_big":
-        return `${field} is too long`;
-
-      case "custom":
-        return issue.message;
-
-      default:
-        return issue.message;
-    }
-  });
+  switch (issue.code) {
+    case "invalid_type":
+      return issue.input === undefined
+        ? `${fieldName} is required`
+        : `${fieldName} should be a ${issue.expected}`;
+    case "too_small":
+      return `${fieldName} must be at least ${issue.minimum} characters`;
+    default:
+      return issue.message;
+  }
 };

@@ -163,6 +163,8 @@ model Stock {
   product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int
   type      StockType
+
+  // Make it as a string because I don't need spesific time and makesure it's exact with the local time
   expiredAt String?
 
   // Optional: Link to order if type is SALE

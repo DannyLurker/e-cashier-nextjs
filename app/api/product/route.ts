@@ -24,6 +24,19 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const transformedParams = Object.fromEntries(searchParams.entries());
+
+    const result = await productService.getMany(transformedParams);
+
+    return Response.json(
+      {
+        message: result.message,
+        products: result.products,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     printConsoleError(error, "GET", req.url);
     return handleError(error);

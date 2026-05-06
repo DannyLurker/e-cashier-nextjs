@@ -8,9 +8,9 @@ export const page = z
     message: "page must be a non-negative integer",
   });
 
-export const isRequiredMessage = (field: string) => {
-  return `${field} is required`;
-};
+export const sortByEnum = z.enum(["name", "price", "createdAt"]);
+
+export const sortOrderEnum = z.enum(["asc", "desc"]);
 
 export const generateReadableError = (issue: z.core.$ZodIssue): string => {
   const fieldName = issue.path.join(".");

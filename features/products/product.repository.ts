@@ -64,6 +64,19 @@ const productRepository = {
     });
   },
 
+  getManyByCategory: async <T extends Prisma.CategorySelect>(
+    params: ProductGetSchema,
+    select: Prisma.Subset<Prisma.CategorySelect, T> | undefined,
+    tx: PrismaClient | Prisma.TransactionClient,
+  ) => {
+    return await tx.category.findUnique({
+      where: {
+        name: params.category,
+      },
+      select,
+    });
+  },
+
   create: async (
     userId: string,
     data: ProductCreateSchema,
@@ -82,8 +95,17 @@ const productRepository = {
               create: {
                 createdBy: userId,
                 quantity: data.initialStock,
-                type: "RESTOCK",
+                type: "IN_STOCK",
                 expiredAt: data.expiredAt,
+              },
+            }
+          : undefined,
+        stockMovements: data.initialStock
+          ? {
+              create: {
+                createdBy: userId,
+                quantity: data.initialStock,
+                type: "IN",
               },
             }
           : undefined,

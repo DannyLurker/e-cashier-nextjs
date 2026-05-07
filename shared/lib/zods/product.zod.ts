@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { page, sortByEnum, sortOrderEnum } from "./general.zod";
+import { sortByEnum, sortOrderEnum } from "./general.zod";
 
 export const productCreateSchema = z.object({
   name: z.string().trim().min(1),
@@ -8,7 +8,7 @@ export const productCreateSchema = z.object({
   price: z.number().min(1),
   attributes: z.json().optional(),
   initialStock: z.number().optional(),
-  expiredAt: z.string().optional(),
+  expiredAt: z.coerce.date().optional(),
 });
 
 export type ProductCreateSchema = z.infer<typeof productCreateSchema>;
@@ -27,6 +27,10 @@ export type ProductUpdateSchema = z.infer<typeof productUpdateSchema>;
 export const productGetSchema = z.object({
   page: z.coerce.number().min(0).default(0),
   dataPerPage: z.coerce.number().min(10).default(10),
+  isByCategory: z
+    .preprocess((val) => val === "true", z.boolean())
+    .default(false),
+  category: z.string().optional(),
   isTakeAll: z.preprocess((val) => val === "true", z.boolean()).default(false),
   search: z.string().trim().optional(),
   sortBy: sortByEnum.default("name"),

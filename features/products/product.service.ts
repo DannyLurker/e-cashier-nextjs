@@ -3,21 +3,22 @@ import {
   productCreateSchema,
   ProductCreateSchema,
   productGetSchema,
-  ProductGetSchema,
   productUpdateSchema,
   ProductUpdateSchema,
 } from "@/shared/lib/zods/product.zod";
 import productRepository, { createProductInclude } from "./product.repository";
 import prisma from "@/shared/db/prisma";
-import { canManageInventory } from "@/shared/lib/validations/user-access-validation";
+
 import { badRequest, forbidden } from "@/shared/lib/error-handlers";
+import { canManageProduct } from "@/shared/lib/validations/user-access-validation";
+import { Prisma } from "@prisma/client";
 
 const productService = {
   create: async (rawData: ProductCreateSchema) => {
     const session = await sessionValidation();
     const validatedData = productCreateSchema.parse(rawData);
 
-    if (!canManageInventory(session.role)) {
+    if (!canManageProduct(session.role)) {
       throw forbidden("You're not allowed to access this feature");
     }
 
@@ -52,11 +53,19 @@ const productService = {
     await sessionValidation();
     const validatedParams = productGetSchema.parse(params);
 
-    const products = await productRepository.getMany(
-      validatedParams,
-      undefined,
-      prisma,
-    );
+    let products;
+
+    // TODO: Add aggreate into product.repository and work on getManyByCategory
+
+    if (validatedParams.isByCategory) {
+      // products = await productRepository.getManyByCategory(validatedParams)
+    } else {
+      products = await productRepository.getMany(
+        validatedParams,
+        undefined,
+        prisma,
+      );
+    }
 
     return {
       message: "Product data successfully retrieved",
@@ -68,7 +77,7 @@ const productService = {
     const session = await sessionValidation();
     const validatedData = productUpdateSchema.parse(rawData);
 
-    if (!canManageInventory(session.role)) {
+    if (!canManageProduct(session.role)) {
       throw forbidden("You're not allowed to access this feature");
     }
 
@@ -84,7 +93,7 @@ const productService = {
 
     if (!productId) throw badRequest("Product id is missing");
 
-    if (!canManageInventory(session.role)) {
+    if (!canManageProduct(session.role)) {
       throw forbidden("You're not allowed to access this feature");
     }
 

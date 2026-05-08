@@ -15,12 +15,27 @@ const productRepository = {
     include: Prisma.Subset<Prisma.ProductInclude, T> | undefined,
     tx: PrismaClient | Prisma.TransactionClient,
   ) => {
-    return await tx.product.findUnique({
+    const product = await tx.product.findUnique({
       where: {
         id: productId,
       },
-      include,
+      include: {
+        ...include,
+        stocks: {
+          where: {
+            type: "IN_STOCK",
+            expiredAt: {
+              gte: new Date(),
+            },
+          },
+        },
+      },
     });
+
+    return {
+      ...product,
+      totalStock: product!.stocks.reduce((sum, s) => sum + s.quantity, 0),
+    };
   },
 
   getMany: async <T extends Prisma.ProductInclude>(
@@ -28,7 +43,7 @@ const productRepository = {
     include: Prisma.Subset<Prisma.ProductInclude, T> | undefined,
     tx: PrismaClient | Prisma.TransactionClient,
   ) => {
-    return await tx.product.findMany({
+    const products = await tx.product.findMany({
       where:
         params.search && params.search.length >= 3
           ? {
@@ -38,7 +53,17 @@ const productRepository = {
               },
             }
           : undefined,
-      include,
+      include: {
+        ...include,
+        stocks: {
+          where: {
+            type: "IN_STOCK",
+            expiredAt: {
+              gte: new Date(),
+            },
+          },
+        },
+      },
       take: params.isTakeAll ? undefined : params.dataPerPage,
       skip: params.isTakeAll ? undefined : params.page * params.dataPerPage,
       orderBy: {
@@ -62,19 +87,41 @@ const productRepository = {
             : undefined,
       },
     });
+
+    return products.map((product) => ({
+      ...product,
+      totalStock: product.stocks.reduce((sum, s) => sum + s.quantity, 0),
+    }));
   },
 
-  getManyByCategory: async <T extends Prisma.CategorySelect>(
+  getManyByCategory: async (
     params: ProductGetSchema,
-    select: Prisma.Subset<Prisma.CategorySelect, T> | undefined,
     tx: PrismaClient | Prisma.TransactionClient,
   ) => {
-    return await tx.category.findUnique({
+    const category = await tx.category.findUnique({
       where: {
         name: params.category,
       },
-      select,
+      include: {
+        products: {
+          include: {
+            stocks: {
+              where: {
+                type: "IN_STOCK",
+                expiredAt: {
+                  gte: new Date(),
+                },
+              },
+            },
+          },
+        },
+      },
     });
+
+    return category?.products.map((product) => ({
+      ...product,
+      totalStock: product.stocks.reduce((sum, s) => sum + s.quantity, 0),
+    }));
   },
 
   create: async (

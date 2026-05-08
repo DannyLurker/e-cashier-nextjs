@@ -34,17 +34,12 @@ const productService = {
 
     if (!productId) throw badRequest("Product ID is missing");
 
-    const productWithStock = createProductInclude({ stocks: true });
-
-    const product = await productRepository.get(
-      productId,
-      productWithStock,
-      prisma,
-    );
+    const product = await productRepository.get(productId, undefined, prisma);
 
     return {
       message: `${product?.name} was successfully retrieved`,
-      product,
+      product: product,
+      totalStock: product.totalStock,
     };
   },
 
@@ -55,10 +50,11 @@ const productService = {
 
     let products;
 
-    // TODO: Add aggreate into product.repository and work on getManyByCategory
-
     if (validatedParams.isByCategory) {
-      // products = await productRepository.getManyByCategory(validatedParams)
+      products = await productRepository.getManyByCategory(
+        validatedParams,
+        prisma,
+      );
     } else {
       products = await productRepository.getMany(
         validatedParams,

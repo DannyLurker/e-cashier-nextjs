@@ -64,6 +64,7 @@ const categoryService = {
 
     return {
       message: `${category.name} category was succesfully created`,
+      id: category.id,
     };
   },
 

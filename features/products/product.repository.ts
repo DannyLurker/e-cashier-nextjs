@@ -67,7 +67,9 @@ const productRepository = {
         },
       },
       take: params.isTakeAll ? undefined : params.dataPerPage,
-      skip: params.isTakeAll ? undefined : params.page * params.dataPerPage,
+      skip: params.isTakeAll
+        ? undefined
+        : (params.page - 1) * params.dataPerPage,
       orderBy: {
         name:
           params.sortBy === "name"

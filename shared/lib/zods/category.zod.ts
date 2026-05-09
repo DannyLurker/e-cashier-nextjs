@@ -17,7 +17,7 @@ export type CategoryUpdateSchema = z.infer<typeof categoryUpdateSchema>;
 export const categoryGetSchema = z.object({
   search: z.string().trim().min(3).optional(),
   sortOrder: sortOrderEnum,
-  sortBy: z.enum(["name", "createdAt"]),
+  sortBy: z.enum(["name", "createdAt"]).default("name"),
   page: page,
   dataPerPage: dataPerPage,
 });

@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         message: result.message,
+        id: result.id,
       },
       { status: 201 },
     );

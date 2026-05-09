@@ -85,7 +85,7 @@ const categoryRepository = {
               : "desc"
             : undefined,
       },
-      skip: params.page * params.dataPerPage,
+      skip: (params.page - 1) * params.dataPerPage,
       take: params.dataPerPage,
     });
 
@@ -144,7 +144,7 @@ const categoryRepository = {
                   : "desc"
                 : undefined,
           },
-          skip: params.page * params.dataPerPage,
+          skip: (params.page - 1) * params.dataPerPage,
           take: params.dataPerPage,
         },
       },

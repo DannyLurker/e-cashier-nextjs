@@ -24,9 +24,7 @@ const productRepository = {
         stocks: {
           where: {
             type: "IN_STOCK",
-            expiredAt: {
-              gte: new Date(),
-            },
+            OR: [{ expiredAt: null }, { expiredAt: { gte: new Date() } }],
           },
         },
       },
@@ -58,9 +56,13 @@ const productRepository = {
         stocks: {
           where: {
             type: "IN_STOCK",
-            expiredAt: {
-              gte: new Date(),
-            },
+            OR: [
+              { expiredAt: null }, // Keep it if it has no expiry date
+              { expiredAt: { gte: new Date() } }, // Keep it if it's not expired yet
+            ],
+          },
+          select: {
+            quantity: true,
           },
         },
       },
@@ -108,9 +110,10 @@ const productRepository = {
             stocks: {
               where: {
                 type: "IN_STOCK",
-                expiredAt: {
-                  gte: new Date(),
-                },
+                OR: [{ expiredAt: null }, { expiredAt: { gte: new Date() } }],
+              },
+              select: {
+                quantity: true,
               },
             },
           },
@@ -131,6 +134,7 @@ const productRepository = {
   ) => {
     await tx.product.create({
       data: {
+        categoryId: data.category,
         createdBy: userId,
         name: data.name,
         description: data.description,
@@ -169,6 +173,7 @@ const productRepository = {
         id: data.productId,
       },
       data: {
+        categoryId: data.category,
         updatedBy: userId,
         name: data.name,
         description: data.description,

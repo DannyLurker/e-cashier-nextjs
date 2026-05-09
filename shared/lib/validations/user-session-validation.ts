@@ -3,7 +3,7 @@ import {
   userRepository,
 } from "@/features/users/user.repository";
 import { auth } from "../auth";
-import { forbidden, notFound, unauthorized } from "../error-handlers";
+import { notFound, unauthorized } from "../error-handlers";
 
 const sessionValidation = async () => {
   const currentSession = await auth();

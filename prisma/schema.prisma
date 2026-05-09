@@ -79,15 +79,16 @@ model User {
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
-  createdProducts Product[]  @relation("ProductCreator")
-  updatedProducts Product[]  @relation("ProductUpdater")
+  createdProducts Product[]       @relation("ProductCreator")
+  updatedProducts Product[]       @relation("ProductUpdater")
   stocks          Stock[]
   orders          Order[]
   logs            LogAudit[]
+  categories      Category[]
+  stockMovements  StockMovement[]
 
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  stockMovements StockMovement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -147,10 +148,14 @@ model Authenticator {
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  products  Product[]
-  createdAt DateTime  @default(now())
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+
+  createdBy String?
+  user      User?   @relation(fields: [createdBy], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 model Product {
@@ -164,8 +169,8 @@ model Product {
   isActive    Boolean @default(true)
 
   stockMovements StockMovement[]
-  category       Category?       @relation(fields: [categoryId], references: [id])
   categoryId     String?
+  category       Category?       @relation(fields: [categoryId], references: [id])
 
   createdBy     String
   updatedBy     String?

@@ -17,7 +17,14 @@ export function handleError(error: unknown) {
     }
 
     if (prismaError.code === prismaErrorCode.uniqueConstraintFailed) {
-      return Response.json({ message: "Data is duplicate" }, { status: 409 });
+      const match = error.message.match(/\(`(.+?)`\)/);
+      const field = match
+        ? match[1].charAt(0).toUpperCase() + match[1].slice(1)
+        : "Field";
+      return Response.json(
+        { message: `${field} already exists` },
+        { status: 409 },
+      );
     }
   }
 

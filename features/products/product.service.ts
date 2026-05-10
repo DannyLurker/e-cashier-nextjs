@@ -6,12 +6,12 @@ import {
   productUpdateSchema,
   ProductUpdateSchema,
 } from "@/shared/lib/zods/product.zod";
-import productRepository, { createProductInclude } from "./product.repository";
+import productRepository from "./product.repository";
 import prisma from "@/shared/db/prisma";
 
 import { badRequest, forbidden } from "@/shared/lib/error-handlers";
 import { canManageProduct } from "@/shared/lib/validations/user-access-validation";
-import { Prisma } from "@prisma/client";
+import auditLogsRepository from "../audit-logs/audit-log.repository";
 
 const productService = {
   create: async (rawData: ProductCreateSchema) => {
@@ -22,10 +22,31 @@ const productService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    await productRepository.create(session.id, validatedData, prisma);
+    const result = await prisma.$transaction(async (tx) => {
+      const product = await productRepository.create(session.id, validatedData, tx);
+
+      await auditLogsRepository.create(
+        {
+          action: "CREATE",
+          entity: "PRODUCT",
+          entityId: product.id,
+          metadata: {
+            id: product.id,
+            name: product.name,
+            categoryId: product.categoryId,
+            price: product.price,
+          },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return product;
+    });
 
     return {
-      message: `${validatedData.name} was successfully created`,
+      message: `${result.name} was successfully created`,
+      id: result.id,
     };
   },
 
@@ -77,10 +98,36 @@ const productService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    await productRepository.update(session.id, validatedData, prisma);
+    const result = await prisma.$transaction(async (tx) => {
+      // Get existing product for audit log
+      const existingProduct = await tx.product.findUnique({
+        where: { id: validatedData.productId },
+      });
+
+      await productRepository.update(session.id, validatedData, tx);
+
+      await auditLogsRepository.create(
+        {
+          action: "UPDATE",
+          entity: "PRODUCT",
+          entityId: validatedData.productId,
+          metadata: {
+            id: validatedData.productId,
+            oldName: existingProduct?.name,
+            newName: validatedData.name,
+            oldPrice: existingProduct?.price,
+            newPrice: validatedData.price,
+          },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return { name: validatedData.name };
+    });
 
     return {
-      message: `${validatedData.name} was successfully updated`,
+      message: `${result.name} was successfully updated`,
     };
   },
 
@@ -93,10 +140,35 @@ const productService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    const product = await productRepository.delete(productId, prisma);
+    const result = await prisma.$transaction(async (tx) => {
+      // Get existing product for audit log before deletion
+      const existingProduct = await tx.product.findUnique({
+        where: { id: productId },
+      });
+
+      const product = await productRepository.delete(productId, tx);
+
+      await auditLogsRepository.create(
+        {
+          action: "DELETE",
+          entity: "PRODUCT",
+          entityId: productId,
+          metadata: {
+            id: productId,
+            name: existingProduct?.name,
+            category: existingProduct?.categoryId,
+            price: existingProduct?.price,
+          },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return product;
+    });
 
     return {
-      message: `${product.name} was successfully deleted`,
+      message: `${result.name} was successfully deleted`,
     };
   },
 };

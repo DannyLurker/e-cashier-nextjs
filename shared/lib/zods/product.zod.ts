@@ -7,7 +7,7 @@ export const productCreateSchema = z.object({
   description: z.string().trim().min(1),
   image: z.string().optional(),
   price: z.number().min(1),
-  attributes: z.json().optional(),
+  attributes: z.record(z.any(), z.any()).optional().default({}),
   initialStock: z.number().optional(),
   expiredAt: z.coerce.date().optional(),
 });

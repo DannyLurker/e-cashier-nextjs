@@ -134,7 +134,7 @@ const productRepository = {
     data: ProductCreateSchema,
     tx: PrismaClient | Prisma.TransactionClient,
   ) => {
-    await tx.product.create({
+    return await tx.product.create({
       data: {
         categoryId: data.categoryId,
         createdBy: userId,

@@ -41,6 +41,10 @@ test.describe("CRUD operations for Product", () => {
         price: 999.99,
         image: "https://example.com/laptop.jpg",
         initialStock: 10,
+        attributes: {
+          color: "black",
+          weight: "1.5kg",
+        },
       },
     });
     const body = await response.json();

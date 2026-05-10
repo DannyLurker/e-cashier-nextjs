@@ -59,6 +59,7 @@ enum Entity {
   ACCOUNT
   SESSION
   VERIFICATION_TOKEN
+  CATEGORY
   PRODUCT
   STOCK
   ORDER
@@ -83,7 +84,7 @@ model User {
   updatedProducts Product[]       @relation("ProductUpdater")
   stocks          Stock[]
   orders          Order[]
-  logs            LogAudit[]
+  logs            AuditLog[]
   categories      Category[]
   stockMovements  StockMovement[]
 
@@ -250,7 +251,7 @@ model OrderItem {
 }
 
 // Log Audit
-model LogAudit {
+model AuditLog {
   id       String     @id @default(cuid())
   userId   String
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)

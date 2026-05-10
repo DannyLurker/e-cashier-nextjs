@@ -10,6 +10,7 @@ import categoryRepository from "./category.repository";
 import prisma from "@/shared/db/prisma";
 import { canManageCategory } from "@/shared/lib/validations/user-access-validation";
 import { forbidden } from "@/shared/lib/error-handlers";
+import auditLogsRepository from "../audit-logs/audit-log.repository";
 
 const categoryService = {
   get: async (categoryId: string, params: any) => {
@@ -19,11 +20,13 @@ const categoryService = {
     if (!canManageCategory(session.role)) {
       throw forbidden("You're not allowed to access this feature");
     }
+
     const category = await categoryRepository.get(
       categoryId,
       validatedParams,
       prisma,
     );
+
     return {
       message: "Category retrieved successfully",
       category,
@@ -57,14 +60,29 @@ const categoryService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    const category = await categoryRepository.create(
-      { name: validatedData.name, createdBy: session.id },
-      prisma,
-    );
+    const newCategory = await prisma.$transaction(async (tx) => {
+      const created = await categoryRepository.create(
+        { name: validatedData.name, createdBy: session.id },
+        tx,
+      );
+
+      await auditLogsRepository.create(
+        {
+          action: "CREATE",
+          entity: "CATEGORY",
+          entityId: created.id,
+          metadata: { id: created.id, name: created.name },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return created;
+    });
 
     return {
-      message: `${category.name} category was succesfully created`,
-      id: category.id,
+      message: `${newCategory.name} category was successfully created`,
+      id: newCategory.id,
     };
   },
 
@@ -76,13 +94,37 @@ const categoryService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    const category = await categoryRepository.update(
-      { id: validatedData.id, name: validatedData.name },
-      prisma,
-    );
+    const result = await prisma.$transaction(async (tx) => {
+      // Get existing category for audit log
+      const existingCategory = await tx.category.findUnique({
+        where: { id: validatedData.id },
+      });
+
+      const category = await categoryRepository.update(
+        { id: validatedData.id, name: validatedData.name },
+        tx,
+      );
+
+      await auditLogsRepository.create(
+        {
+          action: "UPDATE",
+          entity: "CATEGORY",
+          entityId: category.id,
+          metadata: {
+            id: category.id,
+            oldName: existingCategory?.name,
+            newName: category.name,
+          },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return category;
+    });
 
     return {
-      message: `Succesfully updated into ${category.name}`,
+      message: `Succesfully updated into ${result.name}`,
     };
   },
 
@@ -93,10 +135,33 @@ const categoryService = {
       throw forbidden("You're not allowed to access this feature");
     }
 
-    const category = await categoryRepository.delete(categoryId, prisma);
+    const result = await prisma.$transaction(async (tx) => {
+      // Get existing category for audit log before deletion
+      const existingCategory = await tx.category.findUnique({
+        where: { id: categoryId },
+      });
+
+      const category = await categoryRepository.delete(categoryId, tx);
+
+      await auditLogsRepository.create(
+        {
+          action: "DELETE",
+          entity: "CATEGORY",
+          entityId: categoryId,
+          metadata: {
+            id: categoryId,
+            name: existingCategory?.name,
+          },
+          userId: session.id,
+        },
+        tx,
+      );
+
+      return category;
+    });
 
     return {
-      message: `${category.name} category was succesfully deleted`,
+      message: `${result.name} category was succesfully deleted`,
     };
   },
 };

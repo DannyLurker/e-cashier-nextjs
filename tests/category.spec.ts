@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("CRUD operations for Category", () => {
   test.describe.configure({ mode: "serial" });
 
-  const TEST_PREFIX = "TEST_9876544";
+  const TEST_PREFIX = `TEST_${Date.now()}+${Math.floor(Math.random() * 1000)}`;
   let createdCategoryId: string;
 
   test("Create a new category", async ({ request }) => {

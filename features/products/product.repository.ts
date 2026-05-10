@@ -104,7 +104,7 @@ const productRepository = {
   ) => {
     const category = await tx.category.findUnique({
       where: {
-        name: params.category,
+        id  : params.categoryId,
       },
       include: {
         products: {
@@ -136,7 +136,7 @@ const productRepository = {
   ) => {
     await tx.product.create({
       data: {
-        categoryId: data.category,
+        categoryId: data.categoryId,
         createdBy: userId,
         name: data.name,
         description: data.description,
@@ -175,7 +175,7 @@ const productRepository = {
         id: data.productId,
       },
       data: {
-        categoryId: data.category,
+        categoryId: data.categoryId,
         updatedBy: userId,
         name: data.name,
         description: data.description,

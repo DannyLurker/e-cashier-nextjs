@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Playfair_Display, Noto_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import {} from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const playfair = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-playfair", // Creating a CSS variable
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const paddington = Noto_Sans({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-noto",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${playfair.variable} ${paddington.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

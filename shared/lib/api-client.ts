@@ -1,6 +1,12 @@
 import axios from "axios";
 import { getErrorMessage } from "./error-handlers/getErrorMessage";
 
+export interface ApiResponse<T> {
+  message: string;
+  data: T; // This will be your Product, Category, etc.
+  status: number;
+}
+
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
   headers: {

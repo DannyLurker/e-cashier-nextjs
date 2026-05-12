@@ -3,7 +3,7 @@ import { getErrorMessage } from "./error-handlers/getErrorMessage";
 
 export interface ApiResponse<T> {
   message: string;
-  data: T; // This will be your Product, Category, etc.
+  data: T;
   status: number;
 }
 

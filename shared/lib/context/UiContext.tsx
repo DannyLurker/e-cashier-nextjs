@@ -2,15 +2,19 @@
 import React, { createContext, useContext, useState } from "react";
 import { Loader2 } from "lucide-react";
 
-const UIContext = createContext({
+const LoadingContext = createContext({
   setIsLoading: (loading: boolean) => {},
 });
 
-export const UIProvider = ({ children }: { children: React.ReactNode }) => {
+export const LoadingProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <UIContext.Provider value={{ setIsLoading }}>
+    <LoadingContext.Provider value={{ setIsLoading }}>
       {children}
 
       {/* Global Loading Overlay */}
@@ -24,8 +28,8 @@ export const UIProvider = ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
       )}
-    </UIContext.Provider>
+    </LoadingContext.Provider>
   );
 };
 
-export const useUI = () => useContext(UIContext);
+export const useGlobalLoading = () => useContext(LoadingContext);

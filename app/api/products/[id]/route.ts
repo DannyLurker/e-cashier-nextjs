@@ -1,4 +1,5 @@
 import productService from "@/features/products/product.service";
+import { ApiResponse } from "@/shared/lib/api-client";
 import {
   handleError,
   printConsoleError,
@@ -13,10 +14,13 @@ export async function GET(
 
     const result = await productService.get(id);
 
-    return Response.json(
-      { message: result.message, product: result.product },
-      { status: 200 },
-    );
+    const response: ApiResponse<typeof result.product> = {
+      message: result.message,
+      data: result.product,
+      status: 200,
+    };
+
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "DELETE", req.url);
     return handleError(error);
@@ -32,12 +36,13 @@ export async function DELETE(
 
     const result = await productService.delete(id);
 
-    return Response.json(
-      {
-        message: result.message,
-      },
-      { status: 200 },
-    );
+    const response: ApiResponse<null> = {
+      message: result.message,
+      data: null,
+      status: 200,
+    };
+
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "DELETE", req.url);
     return handleError(error);

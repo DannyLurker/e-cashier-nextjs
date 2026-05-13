@@ -21,13 +21,11 @@ test.describe("CRUD operations for Product", () => {
       "/api/category?sortOrder=asc&sortBy=name&page=1&dataPerPage=100",
     );
     const listBody = await listResponse.json();
-    const category = listBody.categories.find(
-      (c: any) => {
-        console.log("Category:", `${TEST_PREFIX}ProductCategory`);
-        console.log("Category name:", c.name);
-        return c.name === `${TEST_PREFIX}ProductCategory`;
-      },
-    );
+    const category = listBody.categories.find((c: any) => {
+      console.log("Category:", `${TEST_PREFIX}ProductCategory`);
+      console.log("Category name:", c.name);
+      return c.name === `${TEST_PREFIX}ProductCategory`;
+    });
     expect(category).toBeDefined();
     testCategoryId = category.id;
   });
@@ -174,9 +172,7 @@ test.describe("CRUD operations for Product", () => {
   });
 
   test("Error: Delete non-existent product", async ({ request }) => {
-    const response = await request.delete(
-      "/api/product/non-existent-id-12345",
-    );
+    const response = await request.delete("/api/product/non-existent-id-12345");
     const body = await response.json();
     console.log("Non-existent Delete Error Response:", body);
 
@@ -198,9 +194,7 @@ test.describe("CRUD operations for Product", () => {
 
     for (const product of products) {
       if (product.name.startsWith(TEST_PREFIX)) {
-        await request.delete(
-          `http://localhost:3000/api/product/${product.id}`,
-        );
+        await request.delete(`http://localhost:3000/api/product/${product.id}`);
       }
     }
 

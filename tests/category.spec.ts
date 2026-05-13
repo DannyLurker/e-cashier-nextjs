@@ -7,41 +7,43 @@ test.describe("CRUD operations for Category", () => {
   let createdCategoryId: string;
 
   test("Create a new category", async ({ request }) => {
-    const response = await request.post("/api/category", {
+    const response = await request.post("/api/categories", {
       data: { name: `${TEST_PREFIX}Book` },
     });
     const body = await response.json();
     console.log("Create Response:", body);
 
     expect(response.status()).toBe(201);
-    createdCategoryId = body.id;
+    createdCategoryId = body.data;
   });
 
   test("Get list of categories", async ({ request }) => {
     const response = await request.get(
-      "/api/category?sortOrder=asc&sortBy=name&page=1&dataPerPage=10",
+      "/api/categories?sortOrder=asc&sortBy=name&page=1&dataPerPage=10",
     );
     const body = await response.json();
     console.log("Get List Response:", body);
 
     expect(response.status()).toBe(200);
-    expect(body.categories).toBeDefined();
-    expect(Array.isArray(body.categories)).toBe(true);
+    expect(body.data).toBeDefined();
+    expect(Array.isArray(body.data)).toBe(true);
   });
 
   test("Get single category by ID", async ({ request }) => {
     console.log("createdCategoryId: ", createdCategoryId);
-    const response = await request.get(`/api/category/${createdCategoryId}`);
+    const response = await request.get(
+      `/api/categories/${createdCategoryId}`,
+    );
     const body = await response.json();
     console.log("Get Single Response:", body);
 
     expect(response.status()).toBe(200);
-    expect(body.category).toBeDefined();
-    expect(body.category.id).toBe(createdCategoryId);
+    expect(body.data).toBeDefined();
+    expect(body.data.id).toBe(createdCategoryId);
   });
 
   test("Update a category", async ({ request }) => {
-    const response = await request.patch(`/api/category/`, {
+    const response = await request.patch("/api/categories", {
       data: { id: createdCategoryId, name: `${TEST_PREFIX}BookUpdated` },
     });
     const body = await response.json();
@@ -51,7 +53,9 @@ test.describe("CRUD operations for Category", () => {
   });
 
   test("Delete a category", async ({ request }) => {
-    const response = await request.delete(`/api/category/${createdCategoryId}`);
+    const response = await request.delete(
+      `/api/categories/${createdCategoryId}`,
+    );
     const body = await response.json();
     console.log("Delete Response:", body);
 
@@ -59,7 +63,7 @@ test.describe("CRUD operations for Category", () => {
   });
 
   test("Error: Create category with short name", async ({ request }) => {
-    const response = await request.post("/api/category", {
+    const response = await request.post("/api/categories", {
       data: { name: "Bo" },
     });
     const body = await response.json();
@@ -70,12 +74,12 @@ test.describe("CRUD operations for Category", () => {
 
   test("Error: Create duplicate category name", async ({ request }) => {
     // Create first
-    await request.post("/api/category", {
+    await request.post("/api/categories", {
       data: { name: `${TEST_PREFIX}Duplicate` },
     });
 
     // Create duplicate
-    const response = await request.post("/api/category", {
+    const response = await request.post("/api/categories", {
       data: { name: `${TEST_PREFIX}Duplicate` },
     });
     const body = await response.json();
@@ -86,7 +90,7 @@ test.describe("CRUD operations for Category", () => {
   });
 
   test("Error: Update non-existent category", async ({ request }) => {
-    const response = await request.patch("/api/category", {
+    const response = await request.patch("/api/categories", {
       data: { name: "Updated Name", id: "non-existent-id-12345" },
     });
     const body = await response.json();
@@ -97,7 +101,7 @@ test.describe("CRUD operations for Category", () => {
 
   test("Error: Delete non-existent category", async ({ request }) => {
     const response = await request.delete(
-      "/api/category/non-existent-id-12345",
+      "/api/categories/non-existent-id-12345",
     );
     const body = await response.json();
     console.log("Non-existent Delete Error Response:", body);
@@ -113,14 +117,14 @@ test.describe("CRUD operations for Category", () => {
     const request = context.request;
 
     const list = await request.get(
-      "http://localhost:3000/api/category?page=1&dataPerPage=100",
+      "http://localhost:3000/api/categories?page=1&dataPerPage=100",
     );
-    const { categories } = await list.json();
+    const { data: categories } = await list.json();
 
     for (const category of categories) {
       if (category.name.startsWith(TEST_PREFIX)) {
         await request.delete(
-          `http://localhost:3000/api/category/${category.id}`,
+          `http://localhost:3000/api/categories/${category.id}`,
         );
       }
     }

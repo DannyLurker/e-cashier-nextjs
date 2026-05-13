@@ -23,7 +23,11 @@ const productService = {
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      const product = await productRepository.create(session.id, validatedData, tx);
+      const product = await productRepository.create(
+        session.id,
+        validatedData,
+        tx,
+      );
 
       await auditLogsRepository.create(
         {
@@ -65,7 +69,7 @@ const productService = {
   },
 
   // I set the params into any because it comes from params that takes everything as a string, it won't match into zod type because it has number, boolean, etc
-  getMany: async (params: any) => {
+  getMany: async (params: { [key: string]: string }) => {
     await sessionValidation();
     const validatedParams = productGetSchema.parse(params);
 

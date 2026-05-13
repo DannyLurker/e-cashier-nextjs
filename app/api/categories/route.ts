@@ -1,4 +1,5 @@
-import categoryService from "@/features/category/category.service";
+import categoryService from "@/features/categories/category.service";
+import { ApiResponse } from "@/shared/lib/api-client";
 import {
   handleError,
   printConsoleError,
@@ -10,13 +11,13 @@ export async function POST(request: Request) {
 
     const result = await categoryService.create(data);
 
-    return Response.json(
-      {
-        message: result.message,
-        id: result.id,
-      },
-      { status: 201 },
-    );
+    const response: ApiResponse<string> = {
+      message: result.message,
+      data: result.id,
+      status: 201,
+    };
+
+    return Response.json(response, { status: 201 });
   } catch (error) {
     printConsoleError(error, "POST", request.url);
     return handleError(error);
@@ -28,12 +29,12 @@ export async function PATCH(request: Request) {
     const data = await request.json();
     const result = await categoryService.update(data);
 
-    return Response.json(
-      {
-        message: result.message,
-      },
-      { status: 200 },
-    );
+    const response: ApiResponse<null> = {
+      message: result.message,
+      data: null,
+      status: 200,
+    };
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "PATCH", request.url);
     return handleError(error);
@@ -47,13 +48,13 @@ export async function GET(req: Request) {
 
     const result = await categoryService.getMany(data);
 
-    return Response.json(
-      {
-        message: result.message,
-        categories: result.categories,
-      },
-      { status: 200 },
-    );
+    const response: ApiResponse<typeof result.categories> = {
+      message: result.message,
+      data: result.categories,
+      status: 200,
+    };
+
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "GET", req.url);
     return handleError(error);

@@ -1,10 +1,13 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { internalServerError } from "../error-handlers";
 
-const LoadingContext = createContext({
-  setIsLoading: (loading: boolean) => {},
-});
+interface LoadingContextType {
+  setIsLoading: (loading: boolean) => void;
+}
+
+const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
 
 export const LoadingProvider = ({
   children,
@@ -32,4 +35,11 @@ export const LoadingProvider = ({
   );
 };
 
-export const useGlobalLoading = () => useContext(LoadingContext);
+export const useGlobalLoading = () => {
+  const context = useContext(LoadingContext);
+  if (!context)
+    throw internalServerError(
+      "useGlobalLoading must be used within LoadingProvider",
+    );
+  return context;
+};

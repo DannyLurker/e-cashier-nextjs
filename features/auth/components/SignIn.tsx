@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function SignIn() {
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.SubmitEvent  <HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     setError("");
     e.preventDefault();
     const formData = new FormData(e.currentTarget);

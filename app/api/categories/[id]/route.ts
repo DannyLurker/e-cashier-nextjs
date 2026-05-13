@@ -1,4 +1,5 @@
-import categoryService from "@/features/category/category.service";
+import categoryService from "@/features/categories/category.service";
+import { ApiResponse } from "@/shared/lib/api-client";
 import {
   handleError,
   printConsoleError,
@@ -13,12 +14,13 @@ export async function DELETE(
 
     const result = await categoryService.delete(id);
 
-    return Response.json(
-      {
-        message: result.message,
-      },
-      { status: 200 },
-    );
+    const response: ApiResponse<null> = {
+      message: result.message,
+      data: null,
+      status: 200,
+    };
+
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "DELETE", request.url);
     return handleError(error);
@@ -38,13 +40,13 @@ export async function GET(
 
     const result = await categoryService.get(id, data);
 
-    return Response.json(
-      {
-        message: result.message,
-        category: result.category,
-      },
-      { status: 200 },
-    );
+    const response: ApiResponse<typeof result.category> = {
+      message: result.message,
+      data: result.category,
+      status: 200,
+    };
+
+    return Response.json(response, { status: 200 });
   } catch (error) {
     printConsoleError(error, "GET", request.url);
     return handleError(error);

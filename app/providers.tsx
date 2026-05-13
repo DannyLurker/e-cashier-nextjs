@@ -4,7 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { InterceptorConfig } from "@/shared/lib/components/providers/InterceptorConfig";
 import { Toaster } from "sonner";
-import { LoadingProvider } from "@/shared/lib/context/UiContext";
+import { LoadingProvider } from "@/shared/lib/context/LoadingContext";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient();

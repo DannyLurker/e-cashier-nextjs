@@ -8,7 +8,7 @@ test.describe("CRUD operations for Product", () => {
   let testCategoryId: string;
 
   test("Setup: Create test category for products", async ({ request }) => {
-    const response = await request.post("/api/category", {
+    const response = await request.post("/api/categories", {
       data: { name: `${TEST_PREFIX}ProductCategory` },
     });
     const body = await response.json();
@@ -16,24 +16,26 @@ test.describe("CRUD operations for Product", () => {
 
     expect(response.status()).toBe(201);
 
+    type CategoryDto = { id: string; name: string };
+
     // Get the category ID from list
     const listResponse = await request.get(
-      "/api/category?sortOrder=asc&sortBy=name&page=1&dataPerPage=100",
+      "/api/categories?sortOrder=asc&sortBy=name&page=1&dataPerPage=100",
     );
     const listBody = await listResponse.json();
-    const category = listBody.categories.find(
-      (c: any) => {
-        console.log("Category:", `${TEST_PREFIX}ProductCategory`);
-        console.log("Category name:", c.name);
-        return c.name === `${TEST_PREFIX}ProductCategory`;
-      },
-    );
+    const categories: CategoryDto[] = listBody.data;
+
+    const category = categories.find((c) => {
+      console.log("Category:", `${TEST_PREFIX}ProductCategory`);
+      console.log("Category name:", c.name);
+      return c.name === `${TEST_PREFIX}ProductCategory`;
+    });
     expect(category).toBeDefined();
-    testCategoryId = category.id;
+    testCategoryId = category!.id;
   });
 
   test("Create a new product", async ({ request }) => {
-    const response = await request.post("/api/product", {
+    const response = await request.post("/api/products", {
       data: {
         name: `${TEST_PREFIX}Laptop`,
         description: "A high-performance laptop for testing",
@@ -56,52 +58,54 @@ test.describe("CRUD operations for Product", () => {
 
   test("Get list of products", async ({ request }) => {
     const response = await request.get(
-      "/api/product?page=1&dataPerPage=10&sortBy=name&orderBy=asc",
+      "/api/products?page=1&dataPerPage=10&sortBy=name&orderBy=asc",
     );
     const body = await response.json();
     console.log("Get List Response:", body);
 
     expect(response.status()).toBe(200);
-    expect(body.products).toBeDefined();
-    expect(Array.isArray(body.products)).toBe(true);
+    expect(body.data).toBeDefined();
+    expect(Array.isArray(body.data)).toBe(true);
   });
 
   test("Get single product by ID", async ({ request }) => {
     // First get list to find the product ID
     const listResponse = await request.get(
-      "/api/product?page=1&dataPerPage=100&sortBy=name&orderBy=asc",
+      "/api/products?page=1&dataPerPage=100&sortBy=name&orderBy=asc",
     );
     const listBody = await listResponse.json();
-    const product = listBody.products.find(
-      (p: any) => p.name === `${TEST_PREFIX}Laptop`,
-    );
+
+    type ProductDto = { id: string; name: string };
+    const products: ProductDto[] = listBody.data;
+
+    const product = products.find((p) => p.name === `${TEST_PREFIX}Laptop`);
     expect(product).toBeDefined();
-    createdProductId = product.id;
+    createdProductId = product!.id;
 
     // Get single product
-    const response = await request.get(`/api/product/${createdProductId}`);
+    const response = await request.get(`/api/products/${createdProductId}`);
     const body = await response.json();
     console.log("Get Single Response:", body);
 
     expect(response.status()).toBe(200);
-    expect(body.product).toBeDefined();
-    expect(body.product.id).toBe(createdProductId);
+    expect(body.data).toBeDefined();
+    expect(body.data.id).toBe(createdProductId);
   });
 
   test("Get products by category", async ({ request }) => {
     const response = await request.get(
-      `/api/product?isByCategory=true&categoryId=${testCategoryId}`,
+      `/api/products?isByCategory=true&categoryId=${testCategoryId}`,
     );
     const body = await response.json();
     console.log("Get By Category Response:", body);
 
     expect(response.status()).toBe(200);
-    expect(body.products).toBeDefined();
-    expect(Array.isArray(body.products)).toBe(true);
+    expect(body.data).toBeDefined();
+    expect(Array.isArray(body.data)).toBe(true);
   });
 
   test("Update a product", async ({ request }) => {
-    const response = await request.patch("/api/product", {
+    const response = await request.patch("/api/products", {
       data: {
         productId: createdProductId,
         name: `${TEST_PREFIX}Gaming Laptop`,
@@ -114,12 +118,12 @@ test.describe("CRUD operations for Product", () => {
     const body = await response.json();
     console.log("Update Response:", body);
 
-    expect(response.status()).toBe(201);
+    expect(response.status()).toBe(200);
     expect(body.message).toContain(`${TEST_PREFIX}Gaming Laptop`);
   });
 
   test("Delete a product", async ({ request }) => {
-    const response = await request.delete(`/api/product/${createdProductId}`);
+    const response = await request.delete(`/api/products/${createdProductId}`);
     const body = await response.json();
     console.log("Delete Response:", body);
 
@@ -128,7 +132,7 @@ test.describe("CRUD operations for Product", () => {
   });
 
   test("Error: Create product with short name", async ({ request }) => {
-    const response = await request.post("/api/product", {
+    const response = await request.post("/api/products", {
       data: {
         name: "",
         description: "Test description",
@@ -143,7 +147,7 @@ test.describe("CRUD operations for Product", () => {
   });
 
   test("Error: Create product with invalid category", async ({ request }) => {
-    const response = await request.post("/api/product", {
+    const response = await request.post("/api/products", {
       data: {
         name: `${TEST_PREFIX}InvalidProduct`,
         description: "Test description",
@@ -158,7 +162,7 @@ test.describe("CRUD operations for Product", () => {
   });
 
   test("Error: Update non-existent product", async ({ request }) => {
-    const response = await request.patch("/api/product", {
+    const response = await request.patch("/api/products", {
       data: {
         productId: "non-existent-id-12345",
         name: `${TEST_PREFIX}UpdatedName`,
@@ -175,7 +179,7 @@ test.describe("CRUD operations for Product", () => {
 
   test("Error: Delete non-existent product", async ({ request }) => {
     const response = await request.delete(
-      "/api/product/non-existent-id-12345",
+      "/api/products/non-existent-id-12345",
     );
     const body = await response.json();
     console.log("Non-existent Delete Error Response:", body);
@@ -192,28 +196,28 @@ test.describe("CRUD operations for Product", () => {
 
     // Delete test products
     const productList = await request.get(
-      "http://localhost:3000/api/product?page=1&dataPerPage=100",
+      "http://localhost:3000/api/products?page=1&dataPerPage=100",
     );
-    const { products } = await productList.json();
+    const { data: products } = await productList.json();
 
     for (const product of products) {
       if (product.name.startsWith(TEST_PREFIX)) {
         await request.delete(
-          `http://localhost:3000/api/product/${product.id}`,
+          `http://localhost:3000/api/products/${product.id}`,
         );
       }
     }
 
     // Delete test categories
     const categoryList = await request.get(
-      "http://localhost:3000/api/category?page=1&dataPerPage=100",
+      "http://localhost:3000/api/categories?page=1&dataPerPage=100",
     );
-    const { categories } = await categoryList.json();
+    const { data: categories } = await categoryList.json();
 
     for (const category of categories) {
       if (category.name.startsWith(TEST_PREFIX)) {
         await request.delete(
-          `http://localhost:3000/api/category/${category.id}`,
+          `http://localhost:3000/api/categories/${category.id}`,
         );
       }
     }

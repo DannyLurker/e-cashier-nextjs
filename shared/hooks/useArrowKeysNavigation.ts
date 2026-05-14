@@ -1,3 +1,5 @@
+// Still has no functionality. Will be implemented in the future.
+
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";

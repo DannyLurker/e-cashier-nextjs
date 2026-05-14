@@ -8,9 +8,11 @@ export default function AuthenticatedLayout({
 }>) {
   return (
     <AuthenticatedProvider>
-      <div className="flex">
+      <div className="flex min-h-screen min-w-0">
         <Sidebar />
-        <main className="flex-1 transition-all duration-300">{children}</main>
+        <main className="min-w-0 flex-1 transition-all duration-300">
+          {children}
+        </main>
       </div>
     </AuthenticatedProvider>
   );

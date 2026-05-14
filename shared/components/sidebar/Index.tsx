@@ -4,21 +4,24 @@ import { useGlobalSidebar } from "@/shared/lib/context/SidebarContext";
 import { cn } from "@/shared/lib/utils";
 import { usePathname } from "next/navigation";
 import SidebarLogo from "./SidebarLogo";
-import SectionLabel from "./sub-components/SecitionLabel";
-import SidebarDashboardLink from "./sub-components/SidebarDashboardLink";
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
-import { LayoutGrid } from "lucide-react";
-import SidebarInventory from "./sub-components/SidebarInventory";
-const paths = {
-  dashboard: "/dashboard",
-  products: "/inventory/products",
-  categories: "/inventory/categories",
-} as const;
+import { asideShell } from "./sidebar-link.styles";
+import SidebarNavContent from "./sub-components/SidebarContent";
+import { paths } from "@/shared/lib/constants/url-paths";
+import { Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { isOpen: isExpanded, toggle } = useGlobalSidebar();
+  const {
+    isOpen: isExpanded,
+    toggle,
+    isMobileDrawerOpen,
+    openMobileDrawer,
+    closeMobileDrawer,
+  } = useGlobalSidebar();
   const inventoryFlyoutId = useId();
+  const mobileDrawerTitleId = useId();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const inventoryChildActive =
@@ -42,6 +45,30 @@ export default function Sidebar() {
       if (closeTimer.current) clearTimeout(closeTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    closeMobileDrawer();
+  }, [pathname, closeMobileDrawer]);
+
+  useEffect(() => {
+    if (!isMobileDrawerOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMobileDrawer();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isMobileDrawerOpen, closeMobileDrawer]);
+
+  useEffect(() => {
+    if (isMobileDrawerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileDrawerOpen]);
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimer.current) {
@@ -68,68 +95,78 @@ export default function Sidebar() {
     }
   };
 
+  const navProps = {
+    pathname,
+    inventoryOpen,
+    setInventoryOpen,
+    inventoryFlyoutOpen,
+    openInventoryFlyout,
+    scheduleCloseInventoryFlyout,
+    onInventoryKeyDown,
+    inventoryFlyoutId,
+  };
+
   return (
-    <aside
-      className={cn(
-        "relative flex min-h-screen h-full shrink-0 flex-col overflow-visible border-e border-[#0f172a]/20",
-        "bg-[#27313e] bg-linear-to-b from-[#2c3644] to-[#27313e] text-[#eaf1ff]",
-        "font-ochre-ui text-sm leading-5 transition-[width] duration-300 ease-out",
-        isExpanded ? "w-65" : "w-18",
-      )}
-      data-expanded={isExpanded ? "true" : "false"}
-    >
-      <SidebarLogo isExpanded={isExpanded} toggle={toggle} />
-
-      <nav className="flex min-h-0 flex-1 flex-col overflow-visible px-2 pb-4 pt-2">
-        {/* SCROLLABLE AREA */}
-        <div
-          className={cn(
-            "flex min-h-0 min-w-0 flex-col overflow-y-auto overflow-x-hidden",
-            isExpanded && "flex-1",
-          )}
+    <>
+      <div className="hidden min-h-screen shrink-0 md:flex">
+        <aside
+          className={cn(asideShell, isExpanded ? "w-65" : "w-18")}
+          data-expanded={isExpanded ? "true" : "false"}
         >
-          {isExpanded && <SectionLabel>Management</SectionLabel>}
+          <SidebarLogo isExpanded={isExpanded} toggle={toggle} />
+          <SidebarNavContent isExpanded={isExpanded} {...navProps} />
+        </aside>
+      </div>
 
-          <SidebarDashboardLink
-            href={paths.dashboard}
-            label="Dashboard"
-            icon={LayoutGrid}
-            isActive={pathname === paths.dashboard}
-            isExpanded={isExpanded}
-          />
-
-          {isExpanded && (
-            <SidebarInventory
-              isExpanded={isExpanded}
-              onMouseEnter={openInventoryFlyout}
-              onMouseLeave={scheduleCloseInventoryFlyout}
-              onKeyDown={onInventoryKeyDown}
-              inventoryFlyoutId={inventoryFlyoutId}
-              inventoryFlyoutOpen={inventoryFlyoutOpen}
-              pathname={pathname}
-              paths={paths}
-              inventoryOpen={inventoryOpen}
-              setInventoryOpen={setInventoryOpen}
-            />
-          )}
-        </div>
-
-        {/* NON-SCROLLABLE AREA (FLYOUT) */}
-        {!isExpanded && (
-          <SidebarInventory
-            isExpanded={isExpanded}
-            onMouseEnter={openInventoryFlyout}
-            onMouseLeave={scheduleCloseInventoryFlyout}
-            onKeyDown={onInventoryKeyDown}
-            inventoryFlyoutId={inventoryFlyoutId}
-            inventoryFlyoutOpen={inventoryFlyoutOpen}
-            pathname={pathname}
-            paths={paths}
-            inventoryOpen={inventoryOpen}
-            setInventoryOpen={setInventoryOpen}
-          />
+      <button
+        type="button"
+        className={cn(
+          "fixed right-4 top-4 z-40 flex size-11 items-center justify-center rounded-full border border-[#0f172a]/20",
+          "bg-[#27313e] text-[#eaf1ff] shadow-lg transition-opacity duration-200 md:hidden",
+          "hover:bg-[#2c3644] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#894d0d]",
+          isMobileDrawerOpen && "pointer-events-none opacity-0",
         )}
-      </nav>
-    </aside>
+        aria-expanded={isMobileDrawerOpen}
+        aria-controls="mobile-sidebar-drawer"
+        onClick={openMobileDrawer}
+        aria-label="Open navigation menu"
+      >
+        <Menu className="size-5" strokeWidth={1.75} />
+      </button>
+
+      <AnimatePresence>
+        {isMobileDrawerOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 md:hidden"
+            id={mobileDrawerTitleId}
+          >
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={closeMobileDrawer}
+            />
+
+            {/* Sidebar Panel */}
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className={cn(asideShell, "absolute left-0 top-0 w-80")}
+            >
+              <SidebarLogo
+                isExpanded
+                toggle={toggle}
+                onCloseDrawer={closeMobileDrawer}
+              />
+              <SidebarNavContent isExpanded {...navProps} />
+            </motion.aside>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

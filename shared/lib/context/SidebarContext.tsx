@@ -7,6 +7,9 @@ interface SidebarContextType {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   toggle: () => void;
+  isMobileDrawerOpen: boolean;
+  openMobileDrawer: () => void;
+  closeMobileDrawer: () => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
@@ -17,14 +20,32 @@ export const SidebarProvider = ({
   children: React.ReactNode;
 }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   const toggle = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
 
+  const openMobileDrawer = useCallback(() => {
+    setIsMobileDrawerOpen(true);
+  }, []);
+
+  const closeMobileDrawer = useCallback(() => {
+    setIsMobileDrawerOpen(false);
+  }, []);
+
   return (
     <>
-      <SidebarContext.Provider value={{ isOpen, setIsOpen, toggle }}>
+      <SidebarContext.Provider
+        value={{
+          isOpen,
+          setIsOpen,
+          toggle,
+          isMobileDrawerOpen,
+          openMobileDrawer,
+          closeMobileDrawer,
+        }}
+      >
         {children}
       </SidebarContext.Provider>
     </>

@@ -1,4 +1,4 @@
-import Sidebar from "@/shared/lib/components/ui/Sidebar";
+import Sidebar from "@/shared/components/sidebar/Index";
 import AuthenticatedProvider from "../providers";
 
 export default function AuthenticatedLayout({

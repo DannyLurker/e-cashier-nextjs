@@ -1,7 +1,5 @@
-import React from "react";
+import CategoryManagement from "@/features/categories/components/CategoryManagement";
 
-const page = () => {
-  return <div>Categories</div>;
-};
-
-export default page;
+export default function CategoriesPage() {
+  return <CategoryManagement />;
+}

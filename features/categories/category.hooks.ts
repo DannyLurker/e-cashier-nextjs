@@ -5,7 +5,10 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import CATEGORY_KEYS from "./category.keys";
-import { CategoryGetManyResponse, CategoryGetResponse } from "./category.types";
+import {
+  CategoryGetResponse,
+  CategoryListResponse,
+} from "./category.types";
 import {
   CategoryCreateSchema,
   CategoryGetSchema,
@@ -20,6 +23,8 @@ export const useCategory = (
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.detail(categoryId),
+    queryFn: () => categoryApi.get(categoryId),
+    enabled: Boolean(categoryId),
     staleTime: 1000 * 60 * 5,
     ...options,
   });
@@ -27,10 +32,11 @@ export const useCategory = (
 
 export const useCategories = (
   filters: CategoryGetSchema,
-  options?: Partial<UseQueryOptions<CategoryGetManyResponse>>,
+  options?: Partial<UseQueryOptions<CategoryListResponse>>,
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.list(filters),
+    queryFn: () => categoryApi.getMany(filters),
     staleTime: 1000 * 60 * 5,
     ...options,
   });
@@ -43,7 +49,7 @@ export const useCreateCategory = () => {
     mutationFn: (payload: CategoryCreateSchema) => categoryApi.create(payload),
     onSuccess: (data) => {
       toast.success(data.message);
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });
 };
@@ -54,7 +60,7 @@ export const useUpdateCategory = () => {
     mutationFn: (payload: CategoryUpdateSchema) => categoryApi.update(payload),
     onSuccess: (data) => {
       toast.success(data.message);
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });
 };
@@ -65,7 +71,7 @@ export const useDeleteCategory = () => {
     mutationFn: (categoryId: string) => categoryApi.delete(categoryId),
     onSuccess: (data) => {
       toast.success(data.message);
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });
 };

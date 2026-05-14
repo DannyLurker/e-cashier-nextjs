@@ -10,6 +10,7 @@ import SidebarNavContent from "./sub-components/SidebarContent";
 import { paths } from "@/shared/lib/constants/url-paths";
 import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import UserIdentity from "@/shared/components/ui/UserIdentity";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -115,6 +116,7 @@ export default function Sidebar() {
         >
           <SidebarLogo isExpanded={isExpanded} toggle={toggle} />
           <SidebarNavContent isExpanded={isExpanded} {...navProps} />
+          <UserIdentity isExpanded={isExpanded} />
         </aside>
       </div>
 
@@ -163,6 +165,7 @@ export default function Sidebar() {
                 onCloseDrawer={closeMobileDrawer}
               />
               <SidebarNavContent isExpanded {...navProps} />
+              <UserIdentity isExpanded />
             </motion.aside>
           </motion.div>
         )}

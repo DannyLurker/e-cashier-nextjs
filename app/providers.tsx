@@ -23,26 +23,35 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SessionProvider>{children}</SessionProvider>
+      <SessionProvider>
+        <LoadingProvider>
+          <SidebarProvider>
+            {/* The Interceptor can now see the Session because it's a child of SessionProvider */}
+            <InterceptorConfig />
+            {children}
+            <Toaster position="top-right" richColors className="font-sans" />
+          </SidebarProvider>
+        </LoadingProvider>
+      </SessionProvider>
     </QueryClientProvider>
   );
 }
 
-export default function AuthenticatedProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <LoadingProvider>
-      <SidebarProvider>
-        {/* Interceptor handles adding the Auth Token to requests */}
-        <InterceptorConfig />
+// export default function AuthenticatedProvider({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   return (
+//     <LoadingProvider>
+//       <SidebarProvider>
+//         {/* Interceptor handles adding the Auth Token to requests */}
+//         <InterceptorConfig />
 
-        {children}
+//         {children}
 
-        <Toaster position="top-right" richColors className="font-sans" />
-      </SidebarProvider>
-    </LoadingProvider>
-  );
-}
+//         <Toaster position="top-right" richColors className="font-sans" />
+//       </SidebarProvider>
+//     </LoadingProvider>
+//   );
+// }

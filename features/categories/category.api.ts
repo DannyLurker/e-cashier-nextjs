@@ -1,6 +1,7 @@
 import { api, ApiResponse } from "@/shared/lib/api-client";
 import {
   CategoryCreateResponse,
+  CategoryDeleteResponse,
   CategoryGetManyResponse,
   CategoryGetResponse,
   CategoryUpdateResponse,
@@ -47,7 +48,7 @@ const categoryApi = {
   },
 
   delete: async (categoryId: string) => {
-    const response = await api.delete<ApiResponse<null>>(
+    const response = await api.delete<ApiResponse<CategoryDeleteResponse>>(
       `/categories/${categoryId}`,
     );
     return response.data.data;

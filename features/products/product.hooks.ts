@@ -14,12 +14,13 @@ import PRODUCT_KEYS from "./product.keys";
 import { toast } from "sonner";
 
 export const useProducts = (
-  params: ProductGetSchema,
+  filters: ProductGetSchema,
   options?: Partial<UseQueryOptions<ProductGetManyResponse>>,
 ) => {
   return useQuery({
-    queryKey: PRODUCT_KEYS.list(params),
-    queryFn: () => productApi.getMany(params),
+    queryKey: PRODUCT_KEYS.list(filters),
+    queryFn: () => productApi.getMany(filters),
+    staleTime: 1000 * 60 * 5,
     ...options,
   });
 };
@@ -31,15 +32,16 @@ export const useProduct = (
   return useQuery({
     queryKey: PRODUCT_KEYS.detail(productId),
     queryFn: () => productApi.get(productId),
+    staleTime: 1000 * 60 * 5,
     ...options,
   });
 };
 
-export const useCreateProduct = (payload: ProductCreateSchema) => {
+export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => productApi.create(payload),
+    mutationFn: (payload: ProductCreateSchema) => productApi.create(payload),
     onSuccess: (data) => {
       toast.success(data.message);
 
@@ -48,11 +50,11 @@ export const useCreateProduct = (payload: ProductCreateSchema) => {
   });
 };
 
-export const useUpdateProduct = (payload: ProductCreateSchema) => {
+export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => productApi.update(payload),
+    mutationFn: (payload: ProductCreateSchema) => productApi.update(payload),
     onSuccess: (data) => {
       toast.success(data.message);
       queryClient.invalidateQueries({ queryKey: PRODUCT_KEYS.lists() });
@@ -60,11 +62,11 @@ export const useUpdateProduct = (payload: ProductCreateSchema) => {
   });
 };
 
-export const useDeleteProduct = (productId: string) => {
+export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => productApi.delete(productId),
+    mutationFn: (productId: string) => productApi.delete(productId),
     onSuccess: (data) => {
       toast.success(data.message);
       queryClient.invalidateQueries({ queryKey: PRODUCT_KEYS.lists() });

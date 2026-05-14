@@ -16,7 +16,7 @@ export const SidebarProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const toggle = useCallback(() => {
     setIsOpen((prev) => !prev);
@@ -31,11 +31,11 @@ export const SidebarProvider = ({
   );
 };
 
-export const useGlobalSiderbar = () => {
+export const useGlobalSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context)
     throw internalServerError(
-      "useGlobalSidebar must be used within SiderbarProvider",
+      "useGlobalSidebar must be used within SidebarProvider",
     );
   return context;
 };

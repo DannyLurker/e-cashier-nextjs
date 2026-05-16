@@ -130,39 +130,6 @@ function CreateForm({
                     </p>
                   ) : null}
                 </div>
-
-                <div>
-                  <label
-                    htmlFor="category-desc-create"
-                    className="font-ochre-ui text-sm font-medium text-[#121c28]"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="category-desc-create"
-                    readOnly
-                    disabled
-                    rows={3}
-                    className="mt-2 w-full resize-none rounded-md border border-[#d9e3f4] bg-[#f8f9ff]/40 px-3 py-2 font-ochre-ui text-sm text-[#524439]/45"
-                    placeholder="Describe the purpose of this category..."
-                  />
-                </div>
-
-                <div>
-                  <p className="font-ochre-ui text-sm font-medium text-[#121c28]">
-                    Category moodboard (optional)
-                  </p>
-                  <div className="mt-2 flex min-h-[120px] cursor-default flex-col items-center justify-center rounded-lg border border-dashed border-[#d8c3b4] bg-[#f8f9ff]/60 px-4 py-6 text-center">
-                    <ImageIcon
-                      className="size-8 text-[#565e74]/50"
-                      strokeWidth={1.25}
-                      aria-hidden
-                    />
-                    <span className="mt-2 font-ochre-ui text-sm text-[#524439]/70">
-                      Upload visual reference
-                    </span>
-                  </div>
-                </div>
               </div>
 
               <div className="mt-8 flex flex-wrap items-center justify-end gap-3 border-t border-[#eef4ff] bg-[#f8f9ff]/40 px-0 pt-5">

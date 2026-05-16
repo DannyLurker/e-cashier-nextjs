@@ -5,6 +5,7 @@ import { cn } from "@/shared/lib/utils";
 import InventorySubLink from "./InventorySubLink";
 import CollapsedFlyoutLink from "./ColapsedFlyoutLink";
 import { navAmbient } from "../sidebar-link.styles";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface SidebarInventoryProps {
   isExpanded: boolean;
@@ -109,30 +110,42 @@ export default function SidebarInventory({
         <Package className="size-5.5 shrink-0 opacity-90" strokeWidth={1.5} />
       </button>
 
-      {inventoryFlyoutOpen && (
-        <div
-          id={inventoryFlyoutId}
-          className="absolute start-full top-0 z-[9999] ms-2 min-w-42 rounded-lg border border-[#0f172a]/30 bg-[#27313e] py-2 shadow-xl"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
-          <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#eaf1ff]/45">
-            Inventory
-          </p>
-          <div className="space-y-0.5 px-1.5">
-            <CollapsedFlyoutLink
-              href={paths.products}
-              label="Products"
-              active={pathname === paths.products}
-            />
-            <CollapsedFlyoutLink
-              href={paths.categories}
-              label="Categories"
-              active={pathname === paths.categories}
-            />
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {inventoryFlyoutOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: "-8px", scale: 0.97 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: "-8px", scale: 0.97 }}
+            transition={{
+              type: "spring",
+              damping: 20,
+              stiffness: 260,
+              mass: 0.8,
+            }}
+            id={inventoryFlyoutId}
+            className="absolute start-full top-0 z-[9999] ms-2 w-44 rounded-[10px] border border-white/[0.07] bg-[#1e2733] p-2 shadow-2xl"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+          >
+            <p className="px-2.5 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-widest text-[#eaf1ff]/35">
+              Inventory
+            </p>
+
+            <div className="flex flex-col gap-0.5">
+              <CollapsedFlyoutLink
+                href={paths.products}
+                label="Products"
+                active={pathname === paths.products}
+              />
+              <CollapsedFlyoutLink
+                href={paths.categories}
+                label="Categories"
+                active={pathname === paths.categories}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

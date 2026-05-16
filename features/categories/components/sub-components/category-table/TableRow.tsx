@@ -37,11 +37,6 @@ export default function TableRow({
           </span>
         </div>
       </td>
-      <td className="hidden max-w-xs px-4 py-3 align-middle md:table-cell">
-        <span className="line-clamp-2 font-ochre-ui text-sm text-[#524439]/90">
-          —
-        </span>
-      </td>
       <td className="px-4 py-3 align-middle">
         <span className="inline-flex min-w-[2.5rem] items-center justify-center rounded-md bg-[#121c28] px-2 py-0.5 font-ochre-ui text-xs font-semibold text-white">
           {category.totalProducts}

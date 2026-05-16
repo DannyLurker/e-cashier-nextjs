@@ -53,13 +53,10 @@ export default function TableHeader({
             <SortIndicator active={sortBy === "name"} order={sortOrder} />
           </button>
         </th>
-        <th className="hidden pb-3 pe-4 pt-3 font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#524439]/80 md:table-cell">
-          Description
-        </th>
         <th className="pb-3 pe-4 pt-3 font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#524439]/80">
           Item count
         </th>
-        <th className="hidden pb-3 pe-4 pt-3 font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#524439]/80 lg:table-cell">
+        <th className="hidden px-4 pb-3 pe-4 pt-3 font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#524439]/80 lg:table-cell">
           <button
             type="button"
             onClick={() => onRequestSort("createdAt")}
@@ -69,10 +66,7 @@ export default function TableHeader({
             )}
           >
             Last updated
-            <SortIndicator
-              active={sortBy === "createdAt"}
-              order={sortOrder}
-            />
+            <SortIndicator active={sortBy === "createdAt"} order={sortOrder} />
           </button>
         </th>
         <th className="w-24 pb-3 pe-4 pt-3 text-end font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#524439]/80">

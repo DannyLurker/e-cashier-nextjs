@@ -5,10 +5,7 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import CATEGORY_KEYS from "./category.keys";
-import {
-  CategoryGetResponse,
-  CategoryListResponse,
-} from "./category.types";
+import { CategoryGetResponse, CategoryListResponse } from "./category.types";
 import {
   CategoryCreateSchema,
   CategoryGetSchema,
@@ -16,10 +13,13 @@ import {
 } from "@/shared/lib/zods/category.zod";
 import categoryApi from "./category.api";
 import { toast } from "sonner";
+import { ApiResponse } from "@/shared/lib/api-client";
 
 export const useCategory = (
   categoryId: string,
-  options?: Partial<UseQueryOptions<CategoryGetResponse>>,
+  options?: Partial<
+    UseQueryOptions<ApiResponse<CategoryGetResponse["category"]>>
+  >,
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.detail(categoryId),
@@ -32,7 +32,9 @@ export const useCategory = (
 
 export const useCategories = (
   filters: CategoryGetSchema,
-  options?: Partial<UseQueryOptions<CategoryListResponse>>,
+  options?: Partial<
+    UseQueryOptions<ApiResponse<CategoryListResponse["categories"]>>
+  >,
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.list(filters),

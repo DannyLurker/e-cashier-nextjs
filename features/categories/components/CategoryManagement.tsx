@@ -6,7 +6,10 @@ import { Plus, Search } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { categoryGetSchema } from "@/shared/lib/zods/category.zod";
 import type { CategoryGetSchema } from "@/shared/lib/zods/category.zod";
-import type { CategoryCreateSchema, CategoryUpdateSchema } from "@/shared/lib/zods/category.zod";
+import type {
+  CategoryCreateSchema,
+  CategoryUpdateSchema,
+} from "@/shared/lib/zods/category.zod";
 import {
   useCategories,
   useCreateCategory,
@@ -61,7 +64,7 @@ export default function CategoryManagement() {
     return categoryGetSchema.parse(raw);
   }, [page, sortBy, sortOrder, debouncedSearch]);
 
-  const { data: categories = [], isLoading, isError } = useCategories(filters);
+  const { data: categories, isLoading, isError } = useCategories(filters);
 
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();
@@ -215,7 +218,7 @@ export default function CategoryManagement() {
 
       <div className="mt-8">
         <CategoryTable
-          categories={categories}
+          categories={categories?.data ?? []}
           isLoading={isLoading}
           isError={isError}
           sortBy={sortBy}

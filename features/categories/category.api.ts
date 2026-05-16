@@ -18,21 +18,19 @@ const categoryApi = {
     categoryId: string,
     params: CategoryGetSchema = categoryGetSchema.parse({}),
   ) => {
-    const response = await api.get<ApiResponse<CategoryGetResponse>>(
-      `/categories/${categoryId}`,
-      { params },
-    );
+    const response = await api.get<
+      ApiResponse<CategoryGetResponse["category"]>
+    >(`/categories/${categoryId}`, { params });
 
-    return response.data.data;
+    return response.data;
   },
 
   getMany: async (params: CategoryGetSchema) => {
-    const response = await api.get<ApiResponse<CategoryListResponse>>(
-      "/categories",
-      { params },
-    );
+    const response = await api.get<
+      ApiResponse<CategoryListResponse["categories"]>
+    >("/categories", { params });
 
-    return response.data.data;
+    return response.data;
   },
 
   create: async (payload: CategoryCreateSchema) => {
@@ -48,10 +46,7 @@ const categoryApi = {
   },
 
   update: async (payload: CategoryUpdateSchema) => {
-    const response = await api.patch<ApiResponse<null>>(
-      `/categories`,
-      payload,
-    );
+    const response = await api.patch<ApiResponse<null>>(`/categories`, payload);
     return {
       message: response.data.message,
     } satisfies CategoryUpdateApiResult;

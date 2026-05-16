@@ -1,20 +1,20 @@
-import categoryApi from "./category.api";
+import categoryService from "./category.service";
 
 export type CategoryListResponse = Awaited<
-  ReturnType<typeof categoryApi.getMany>
+  ReturnType<typeof categoryService.getMany>
 >;
-export type CategoryListItem = CategoryListResponse[number];
+export type CategoryListItem = CategoryListResponse["categories"][number];
 
 export type CategoryCreateApiResult = Awaited<
-  ReturnType<typeof categoryApi.create>
+  ReturnType<typeof categoryService.create>
 >;
 export type CategoryUpdateApiResult = Awaited<
-  ReturnType<typeof categoryApi.update>
+  ReturnType<typeof categoryService.update>
 >;
 export type CategoryDeleteApiResult = Awaited<
-  ReturnType<typeof categoryApi.delete>
+  ReturnType<typeof categoryService.delete>
 >;
 
 export type CategoryGetResponse = Awaited<
-  ReturnType<typeof categoryApi.get>
+  ReturnType<typeof categoryService.get>
 >;

@@ -55,7 +55,7 @@ const categoryRepository = {
       },
       include: {
         products: {
-          include: {
+          select: {
             stocks: {
               where: {
                 type: "IN_STOCK",
@@ -68,6 +68,7 @@ const categoryRepository = {
                 quantity: true,
               },
             },
+            id: true,
           },
         },
       },

@@ -1,9 +1,12 @@
 "use client";
 
+import { useState, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { User } from "lucide-react";
+import { User, Settings } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ROLE_LABEL } from "@/shared/lib/constants/roles";
+import { AnimatePresence } from "framer-motion"; // HIGHLIGHTED: Moved AnimatePresence here
+import UserFlyout from "./UserFlyout";
 
 function roleLabel(role: string | undefined): string {
   if (!role || !(role in ROLE_LABEL)) return "Member";
@@ -26,6 +29,25 @@ export default function UserIdentity({
   const name = user?.name?.trim() || "Signed in";
   const image = user?.image;
   const roleLine = roleLabel(user?.role).toUpperCase();
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [profileFlyoutOpen, setProfileFlyoutOpen] = useState(false);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  }, []);
+
+  const openProfileFlyout = useCallback(() => {
+    clearCloseTimer();
+    setProfileFlyoutOpen(true);
+  }, [clearCloseTimer]);
+
+  const scheduleCloseProfileFlyout = useCallback(() => {
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => setProfileFlyoutOpen(false), 140);
+  }, [clearCloseTimer]);
 
   const avatar = (
     <div
@@ -35,7 +57,6 @@ export default function UserIdentity({
       )}
     >
       {hasAvatar(image) ? (
-        // eslint-disable-next-line @next/next/no-img-element -- user URLs from providers / DB are not preconfigured in next.config
         <img
           src={image}
           alt={isExpanded ? "" : name}
@@ -72,25 +93,37 @@ export default function UserIdentity({
     );
   }
 
+  // === COLLAPSED STATE ===
   if (!isExpanded) {
     return (
       <div
         className={cn(
-          "flex shrink-0 justify-center border-t border-[#eaf1ff]/10 px-2 pb-3 pt-3",
+          "flex shrink-0 justify-center border-t border-[#eaf1ff]/10 px-2 pb-3 pt-3 mb-2",
           className,
         )}
       >
         <div
-          className="flex flex-col items-center gap-1"
-          title={`${name} · ${roleLine}`}
+          className="relative flex flex-col items-center gap-1"
+          onMouseEnter={openProfileFlyout}
+          onMouseLeave={scheduleCloseProfileFlyout}
           aria-label={`${name}, ${roleLine}`}
         >
           {avatar}
+          <AnimatePresence>
+            {profileFlyoutOpen && (
+              <UserFlyout
+                onMouseEnter={openProfileFlyout}
+                onMouseLeave={scheduleCloseProfileFlyout}
+                className="inset-s-full bottom-0 ms-4"
+              />
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
   }
 
+  // === EXPANDED STATE ===
   return (
     <div
       className={cn(
@@ -98,7 +131,7 @@ export default function UserIdentity({
         className,
       )}
     >
-      <div className="flex items-center gap-3 rounded-lg bg-[#2a3442] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
+      <div className="relative flex items-center gap-3 rounded-lg bg-[#2a3442] px-3 py-3 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
         {avatar}
         <div className="min-w-0 flex-1">
           <p className="font-ochre-ui text-[10px] font-semibold uppercase tracking-wider text-[#eaf1ff]/45">
@@ -108,6 +141,23 @@ export default function UserIdentity({
             {name}
           </p>
         </div>
+        <button
+          onClick={() => setProfileFlyoutOpen((prev) => !prev)}
+          className="shrink-0 rounded-md p-1.5 text-[#eaf1ff]/45 transition-colors hover:bg-[#894d0d]/20 hover:text-[#ffb77b]"
+          aria-label="Settings"
+        >
+          <Settings className="size-5" strokeWidth={1.5} />
+        </button>
+
+        <AnimatePresence>
+          {profileFlyoutOpen && (
+            <UserFlyout
+              onMouseEnter={openProfileFlyout}
+              onMouseLeave={scheduleCloseProfileFlyout}
+              className="inset-e-0 bottom-full mb-3"
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

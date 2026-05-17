@@ -1,8 +1,9 @@
 "use client";
 
+import { sharedButtonClasses } from "@/features/categories/category.styles";
 import type { CategoryListItem } from "@/features/categories/category.types";
 import { cn } from "@/shared/lib/utils";
-import { Folder, Pencil, Trash2 } from "lucide-react";
+import { Folder, Info, InfoIcon, Pencil, Trash2 } from "lucide-react";
 
 function formatUpdatedAt(value: Date | string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -48,25 +49,40 @@ export default function TableRow({
       </td>
       <td className="px-4 py-3 align-middle text-end">
         <div className="inline-flex items-center gap-1">
+          {/* <button
+            type="button"
+            onClick={() => onEdit(category)}
+            className={cn(
+              sharedButtonClasses,
+
+              "hover:bg-[#eef4ff] hover:text-[#121c28]",
+            )}
+            aria-label={`View details for ${category.name}`}
+          >
+            <Info className="size-4" strokeWidth={1.5} />
+          </button> */}
+
           <button
             type="button"
             onClick={() => onEdit(category)}
             className={cn(
-              "rounded-md p-2 text-[#565e74] outline-none transition-colors",
+              sharedButtonClasses,
+
               "hover:bg-[#e5eeff] hover:text-[#121c28]",
-              "focus-visible:ring-2 focus-visible:ring-[#894d0d]/40",
             )}
             aria-label={`Edit ${category.name}`}
           >
             <Pencil className="size-4" strokeWidth={1.5} />
           </button>
+
           <button
             type="button"
             onClick={() => onDelete(category)}
             className={cn(
-              "rounded-md p-2 text-[#565e74] outline-none transition-colors",
+              sharedButtonClasses,
+
               "hover:bg-[#ffdad6]/60 hover:text-[#ba1a1a]",
-              "focus-visible:ring-2 focus-visible:ring-[#894d0d]/40",
+              "focus-visible:ring-[#ba1a1a]",
             )}
             aria-label={`Delete ${category.name}`}
           >

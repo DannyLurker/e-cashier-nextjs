@@ -72,14 +72,14 @@ export default function SidebarInventory({
             <div className="relative ms-3 mt-1 border-s border-[#eaf1ff]/12 ps-3">
               <div className="space-y-1 pb-1 pt-0.5">
                 <InventorySubLink
-                  href={paths.products}
-                  label="Products"
-                  active={pathname === paths.products}
-                />
-                <InventorySubLink
                   href={paths.categories}
                   label="Categories"
                   active={pathname === paths.categories}
+                />
+                <InventorySubLink
+                  href={paths.products}
+                  label="Products"
+                  active={pathname === paths.products}
                 />
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function SidebarInventory({
               mass: 0.8,
             }}
             id={inventoryFlyoutId}
-            className="absolute start-full top-0 z-[9999] ms-2 w-44 rounded-[10px] border border-white/[0.07] bg-[#1e2733] p-2 shadow-2xl"
+            className="absolute inset-s-full top-0 z-9999 ms-2 w-44 rounded-[10px] border border-white/[0.07] bg-[#1e2733] p-2 shadow-2xl"
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
           >

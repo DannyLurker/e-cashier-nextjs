@@ -10,7 +10,7 @@ import SidebarNavContent from "./sub-components/SidebarContent";
 import { paths } from "@/shared/lib/constants/url-paths";
 import { Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import UserIdentity from "@/shared/components/ui/UserIdentity";
+import UserIdentity from "@/shared/components/user-profile/UserIdentity";
 
 export default function Sidebar() {
   const pathname = usePathname();

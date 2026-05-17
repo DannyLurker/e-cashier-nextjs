@@ -1,4 +1,9 @@
 import categoryService from "@/features/categories/category.service";
+import {
+  CategoryCreateApiResponse,
+  CategoryListApiResponse,
+  CategoryUpdateApiResponse,
+} from "@/features/categories/category.types";
 import { ApiResponse } from "@/shared/lib/api-client";
 import {
   handleError,
@@ -11,7 +16,7 @@ export async function POST(request: Request) {
 
     const result = await categoryService.create(data);
 
-    const response: ApiResponse<string> = {
+    const response: CategoryCreateApiResponse = {
       message: result.message,
       data: result.id,
       status: 201,
@@ -29,7 +34,7 @@ export async function PATCH(request: Request) {
     const data = await request.json();
     const result = await categoryService.update(data);
 
-    const response: ApiResponse<null> = {
+    const response: CategoryUpdateApiResponse = {
       message: result.message,
       data: null,
       status: 200,
@@ -48,7 +53,7 @@ export async function GET(req: Request) {
 
     const result = await categoryService.getMany(data);
 
-    const response: ApiResponse<typeof result.categories> = {
+    const response: CategoryListApiResponse = {
       message: result.message,
       data: result.categories,
       status: 200,

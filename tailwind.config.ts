@@ -10,6 +10,16 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ["var(--font-eb-garamond)", "ui-serif", "Georgia", "serif"],
+        sans: [
+          "var(--font-hanken)",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
+      },
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

@@ -1,10 +1,10 @@
 import { api, ApiResponse } from "@/shared/lib/api-client";
 import {
-  CategoryCreateApiResult,
-  CategoryDeleteApiResult,
-  CategoryListResponse,
-  CategoryGetResponse,
-  CategoryUpdateApiResult,
+  CategoryCreateApiResponse,
+  CategoryDeleteApiResponse,
+  CategoryGetApiResponse,
+  CategoryListApiResponse,
+  CategoryUpdateApiResponse,
 } from "./category.types";
 import {
   CategoryCreateSchema,
@@ -18,47 +18,34 @@ const categoryApi = {
     categoryId: string,
     params: CategoryGetSchema = categoryGetSchema.parse({}),
   ) => {
-    const response = await api.get<
-      ApiResponse<CategoryGetResponse["category"]>
-    >(`/categories/${categoryId}`, { params });
+    const response = await api.get<CategoryGetApiResponse>(
+      `/categories/${categoryId}`,
+      { params },
+    );
 
     return response.data;
   },
 
   getMany: async (params: CategoryGetSchema) => {
-    const response = await api.get<
-      ApiResponse<CategoryListResponse["categories"]>
-    >("/categories", { params });
+    const response = await api.get<CategoryListApiResponse>("/categories", {
+      params,
+    });
 
     return response.data;
   },
 
   create: async (payload: CategoryCreateSchema) => {
-    const response = await api.post<ApiResponse<string>>(
-      "/categories",
-      payload,
-    );
-
-    return {
-      message: response.data.message,
-      id: response.data.data,
-    } satisfies CategoryCreateApiResult;
+    return await api.post<CategoryCreateApiResponse>("/categories", payload);
   },
 
   update: async (payload: CategoryUpdateSchema) => {
-    const response = await api.patch<ApiResponse<null>>(`/categories`, payload);
-    return {
-      message: response.data.message,
-    } satisfies CategoryUpdateApiResult;
+    return await api.patch<CategoryUpdateApiResponse>(`/categories`, payload);
   },
 
   delete: async (categoryId: string) => {
-    const response = await api.delete<ApiResponse<null>>(
+    return await api.delete<CategoryDeleteApiResponse>(
       `/categories/${categoryId}`,
     );
-    return {
-      message: response.data.message,
-    } satisfies CategoryDeleteApiResult;
   },
 };
 

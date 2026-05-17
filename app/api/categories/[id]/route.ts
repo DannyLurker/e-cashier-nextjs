@@ -1,4 +1,8 @@
 import categoryService from "@/features/categories/category.service";
+import {
+  CategoryDeleteApiResponse,
+  CategoryGetApiResponse,
+} from "@/features/categories/category.types";
 import { ApiResponse } from "@/shared/lib/api-client";
 import {
   handleError,
@@ -14,7 +18,7 @@ export async function DELETE(
 
     const result = await categoryService.delete(id);
 
-    const response: ApiResponse<null> = {
+    const response: CategoryDeleteApiResponse = {
       message: result.message,
       data: null,
       status: 200,
@@ -40,7 +44,7 @@ export async function GET(
 
     const result = await categoryService.get(id, data);
 
-    const response: ApiResponse<typeof result.category> = {
+    const response: CategoryGetApiResponse = {
       message: result.message,
       data: result.category,
       status: 200,

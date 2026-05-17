@@ -53,7 +53,7 @@ const categoryRepository = {
               }
             : undefined,
       },
-      include: {
+      select: {
         products: {
           select: {
             stocks: {
@@ -71,6 +71,9 @@ const categoryRepository = {
             id: true,
           },
         },
+        name: true,
+        updatedAt: true,
+        id: true,
       },
       orderBy: {
         createdAt:

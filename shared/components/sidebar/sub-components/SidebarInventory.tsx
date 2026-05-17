@@ -133,14 +133,15 @@ export default function SidebarInventory({
 
             <div className="flex flex-col gap-0.5">
               <CollapsedFlyoutLink
-                href={paths.products}
-                label="Products"
-                active={pathname === paths.products}
-              />
-              <CollapsedFlyoutLink
                 href={paths.categories}
                 label="Categories"
                 active={pathname === paths.categories}
+              />
+
+              <CollapsedFlyoutLink
+                href={paths.products}
+                label="Products"
+                active={pathname === paths.products}
               />
             </div>
           </motion.div>

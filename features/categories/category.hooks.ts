@@ -5,7 +5,6 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import CATEGORY_KEYS from "./category.keys";
-import { CategoryGetResponse, CategoryListResponse } from "./category.types";
 import {
   CategoryCreateSchema,
   CategoryGetSchema,
@@ -13,13 +12,14 @@ import {
 } from "@/shared/lib/zods/category.zod";
 import categoryApi from "./category.api";
 import { toast } from "sonner";
-import { ApiResponse } from "@/shared/lib/api-client";
+import {
+  CategoryGetApiResponse,
+  CategoryListApiResponse,
+} from "./category.types";
 
 export const useCategory = (
   categoryId: string,
-  options?: Partial<
-    UseQueryOptions<ApiResponse<CategoryGetResponse["category"]>>
-  >,
+  options?: Partial<UseQueryOptions<CategoryGetApiResponse>>,
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.detail(categoryId),
@@ -32,9 +32,7 @@ export const useCategory = (
 
 export const useCategories = (
   filters: CategoryGetSchema,
-  options?: Partial<
-    UseQueryOptions<ApiResponse<CategoryListResponse["categories"]>>
-  >,
+  options?: Partial<UseQueryOptions<CategoryListApiResponse>>,
 ) => {
   return useQuery({
     queryKey: CATEGORY_KEYS.list(filters),
@@ -49,8 +47,8 @@ export const useCreateCategory = () => {
 
   return useMutation({
     mutationFn: (payload: CategoryCreateSchema) => categoryApi.create(payload),
-    onSuccess: (data) => {
-      toast.success(data.message);
+    onSuccess: (response) => {
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });
@@ -60,8 +58,8 @@ export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CategoryUpdateSchema) => categoryApi.update(payload),
-    onSuccess: (data) => {
-      toast.success(data.message);
+    onSuccess: (response) => {
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });
@@ -71,8 +69,8 @@ export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (categoryId: string) => categoryApi.delete(categoryId),
-    onSuccess: (data) => {
-      toast.success(data.message);
+    onSuccess: (response) => {
+      toast.success(response.data.message);
       queryClient.invalidateQueries({ queryKey: CATEGORY_KEYS.all });
     },
   });

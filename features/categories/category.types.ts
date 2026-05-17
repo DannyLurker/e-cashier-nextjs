@@ -1,20 +1,36 @@
+import { ApiResponse } from "@/shared/lib/api-client";
 import categoryService from "./category.service";
 
-export type CategoryListResponse = Awaited<
+// Service Response
+type CategoryListServiceResult = Awaited<
   ReturnType<typeof categoryService.getMany>
 >;
-export type CategoryListItem = CategoryListResponse["categories"][number];
 
-export type CategoryCreateApiResult = Awaited<
-  ReturnType<typeof categoryService.create>
->;
-export type CategoryUpdateApiResult = Awaited<
-  ReturnType<typeof categoryService.update>
->;
-export type CategoryDeleteApiResult = Awaited<
-  ReturnType<typeof categoryService.delete>
+// type CategoryCreateServiceResult = Awaited<
+//   ReturnType<typeof categoryService.create>
+// >;
+// type CategoryUpdateServiceResult = Awaited<
+//   ReturnType<typeof categoryService.update>
+// >;
+// type CategoryDeleteServiceResult = Awaited<
+//   ReturnType<typeof categoryService.delete>
+// >;
+
+type CategoryGetServiceResult = Awaited<ReturnType<typeof categoryService.get>>;
+
+// Api Response
+export type CategoryGetApiResponse = ApiResponse<
+  CategoryGetServiceResult["category"]
 >;
 
-export type CategoryGetResponse = Awaited<
-  ReturnType<typeof categoryService.get>
+export type CategoryListItem = CategoryListServiceResult["categories"][number];
+
+export type CategoryListApiResponse = ApiResponse<
+  CategoryListServiceResult["categories"]
 >;
+
+export type CategoryCreateApiResponse = ApiResponse<string>;
+
+export type CategoryUpdateApiResponse = ApiResponse<null>;
+
+export type CategoryDeleteApiResponse = ApiResponse<null>;

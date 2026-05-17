@@ -25,6 +25,7 @@ export default function TableRow({
   onEdit,
   onDelete,
 }: TableRowProps) {
+  console.log(category);
   return (
     <tr className="border-b border-[#eef4ff] last:border-0 hover:bg-[#f8f9ff]/80">
       <td className="px-4 py-3 align-middle">
@@ -43,7 +44,7 @@ export default function TableRow({
         </span>
       </td>
       <td className="hidden px-4 py-3 align-middle font-ochre-ui text-sm text-[#524439] lg:table-cell">
-        {formatUpdatedAt(category.createdAt)}
+        {formatUpdatedAt(category.updatedAt)}
       </td>
       <td className="px-4 py-3 align-middle text-end">
         <div className="inline-flex items-center gap-1">

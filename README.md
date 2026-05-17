@@ -1,3 +1,4 @@
-This is a nextjs authentication template with auth.js
+POS system with Next JS
 
-NOTES: In this template, it still doesn't have a create account method. Only sign in method
+Status: Shutdown for a while
+Notes: Change the concept from POS to IMS
